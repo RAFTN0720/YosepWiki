@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>온라인 대법전 / 요셉위키</title>
+
+  <style>
+    :root {
+      --bg: #0f1217;
+      --panel: #151a21;
+      --text: #e7eef7;
+      --muted: #9fb0c3;
+      --accent: #4ea1ff;
+      --border: #223042;
+      --moredarker: #10151b;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Apple SD Gothic Neo, sans-serif;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* 헤더 */
+    header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(0deg, var(--panel), #12161c);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0.3px;
+    }
+
+    /* 메뉴 버튼 */
+    .menu-btn {
+      position: absolute;
+      right: 20px;
+      top: 16px;
+      font-size: 22px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* 오른쪽 슬라이드 메뉴 */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -290px;
+      width: 260px;
+      height: 100%;
+      background: var(--panel);
+      border-left: 2px solid var(--border);
+      transition: right 0.25s ease;
+      z-index: 50;
+      padding: 14px;
+      box-shadow: -3px 0 10px rgba(0,0,0,0.4);
+    }
+    .side-menu.open {
+      right: 0;
+    }
+
+    .side-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 17px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .side-tabs {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+    }
+    .side-tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+       background: var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .side-tab.active {
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
+    }
+
+    .panel {
+      margin-top: 14px;
+    }
+
+    .theme-option {
+      display: flex;
+      gap: 6px;
+      padding: 6px 0;
+      cursor: pointer;
+    }
+
+    /* 오버레이 */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      z-index: 40;
+    }
+    .overlay.show {
+      display: block;
+    }
+
+    /* 콘텐츠 */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .search {
+      display: flex;
+      gap: 10px;
+      margin: 12px 0 20px;
+    }
+
+    .search input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+    }
+
+    /* 학년 탭 */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      cursor: pointer;
+    }
+    .tab.active {
+      background: var(--accent);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* 리스트 */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 14px;
+      cursor: pointer;
+    }
+
+    .title {
+      font-weight: 600;
+    }
+
+    .chevron {
+      color: var(--muted);
+      transition: 0.2s;
+    }
+    .item.open .chevron {
+      transform: rotate(90deg);
+      color: var(--accent);
+    }
+
+    .content {
+      display: none;
+      border-top: 1px solid var(--border);
+      background: var(--moredarker);
+    }
+    .item.open .content {
+      display: block;
+    }
+
+    .content-inner {
+      padding: 14px;
+      white-space: pre-wrap;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 2px 8px;
+    }
+
+/* important 강조 스타일 - 금색 테마 + 둥근 모서리 */
+.item.important .item-header {
+  background: #3a2f00;          /* 진한 브라운/골드 느낌 배경 */
+  border: 2px solid #ffd700;    /* 금색 테두리 */
+  border-radius: 12px;           /* 모서리 둥글게 */
+  padding: 10px;                 /* 내부 여백 */
+}
+
+.item.important .title {
+  color: #ffd700;                /* 눈에 띄는 금색 글자 */
+  font-weight: 700;
+  text-shadow: 1px 1px 2px #b38f00; /* 금빛 반짝임 느낌 */
+}
+
+    /* 라이트 테마 */
+    body.light {
+      --bg: #eef2f6;
+      --panel: #ffffff;
+      --text: #222;
+      --border: #ccd3dd;
+      --accent: #4ea1ff;
+      --muted: #75859a;
+      --moredarker: #c1d1dd;
+    }
+
+    /* 블루 테마 */
+    body.blue {
+      --bg: #0d1a2a;
+      --panel: #102334;
+      --text: #e8f5ff;
+      --border: #24435e;
+      --accent: #4ea1ff;
+      --muted: #879cb4;
+      --moredarker: #252545;
+    }
+    
+    body.red {
+  --bg: #2a0d0f;         /* 전체 배경: 짙은 와인빛 */
+  --panel: #341019;      /* 패널 배경: 살짝 밝은 버건디 */
+  --text: #ffe8e8;       /* 글자색: 연한 분홍/크림톤 */
+  --border: #6b2e3a;     /* 테두리: 진한 장미빛 */
+  --accent: #ff6b8f;     /* 강조 색상: 파스텔 핑크/레드 */
+  --muted: #a87a8c;      /* 덜 강조된 색상: 연한 장미/파스텔 */
+  --moredarker: #33221a; /* 더 어두운 영역: 깊은 갈색 섞인 레드 */
+    }
+    
+    /* 그린 테마 */
+    body.green {
+  --bg: #0d2a1a;         /* 전체 배경: 짙은 녹색 */
+  --panel: #103422;      /* 패널 배경: 조금 밝은 녹색 */
+  --text: #e8ffe8;       /* 글자색: 연한 연두색/크림톤 */
+  --border: #2e6b3e;     /* 테두리: 진한 초록색 */
+  --accent: #4eff6b;     /* 강조 색상: 밝은 초록 */
+  --muted: #7aa87a;      /* 덜 강조된 색상: 연한 초록 */
+  --moredarker: #1a3322; /* 더 어두운 영역: 아주 짙은 녹색 */
+    }
+    
+   body.yellow {
+  --bg: #fffbe6;         /* 전체 배경: 연한 크림빛 옐로우 */
+  --panel: #fff1a8;      /* 패널 배경: 부드러운 파스텔 옐로우 */
+  --text: #3a2e00;       /* 글자색: 따뜻한 다크 브라운 */
+  --border: #d4b96a;     /* 테두리: 은은한 황금빛 */
+  --accent: #ffe066;     /* 강조 색상: 밝고 화사한 노랑 */
+  --muted: #000000;      /* 덜 강조: 연한 파스텔 노랑 */
+  --moredarker: #f5e88e;/* 더 어두운 영역: 골드/브라운 섞인 색 */
+}
+
+    body.rainbow {
+    --panel: rgba(255, 255, 255, 0.15); /* 패널은 반투명으로 배경이 살짝 보이게 */
+    --text: #ffffff;                     /* 글자색은 흰색으로 대비 */
+    --border: #ffffff33;                 /* 연한 흰색 테두리 */
+    --accent: #ffd700;                   /* 강조 색상: 금색 느낌 */
+    --muted: #ffffff55;                  /* 덜 강조: 반투명 흰색 */
+    --moredarker: #ffffff22;             /* 더 어두운 영역: 거의 투명 흰색 */
+
+    /* 배경 애니메이션 적용 */
+    animation: rainbowBG 20s linear infinite;
+    background: linear-gradient(999deg, #ff6b6b, #f9ca24, #6ab04c, #2980b9, #8e44ad, #ff6b6b);
+    background-size: 300% 300%; /* 배경을 크게 만들어서 이동 가능 */
+}
+
+@keyframes rainbowBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>☠️🌎️온라인 대법전 / 요셉위키🌎️☠️</h1>
+    <div id="menuBtn" class="menu-btn">☰</div>
+  </header>
+
+  <!-- 오른쪽 메뉴 -->
+  <aside id="sideMenu" class="side-menu">
+    <div class="side-header">
+      <span>메뉴🔨</span>
+      <button id="closeMenu" class="close-btn">✕</button>
+    </div>
+
+    <div class="side-tabs">
+      <div class="side-tab active" data-panel="wiki">📘 위키</div>
+      <div class="side-tab" data-panel="desc">📄 설명</div>
+      <div class="side-tab" data-panel="settings">⚙ 설정</div>
+    </div>
+
+    <div class="side-content">
+      <div class="panel" id="panel-wiki" style="display:block;">
+          <h1>요셉위키</h1>
+        <p>현재 위키 페이지를 보고 있습니다, 대법전 온라인 위키입니다.
+        불법 공유 시 다 찢어죽입니다.</p>
+      </div>
+
+      <div class="panel" id="panel-desc" style="display:none;">
+        <h1>설명</h1>
+        <h3> 제작 - 윤서후🔨 </h3>
+        <h4> 도움 - 조준우, 채병호, 최요셉, 조태수🔎🤟</h4>
+        <p>요셉위키는 김천 석천 중학교 최요셉의 별명/이야기 대법전입니다.
+         요셉이가 만들어달라는 요청을 하였습니다 
+         
+         이 이야기의 저작권, 소유는 모두 최요셉에게 있습니다.</p>
+         
+         <div style="padding-top:50px; text-align:center;">
+         <img src="https://i.ibb.co/dwS723Hz/image.png" alt="image" width="200">
+        </div>
+      </div>
+
+      <div class="panel" id="panel-settings" style="display:none;">
+        <h3>테마 변경</h3>
+
+        <label class="theme-option">
+          <input type="radio" name="theme" value="dark" checked> 다크 투스 테마
+        </label>
+        <label class="theme-option">
+          <input type="radio" name="theme" value="light"> 라이트 테마
+        </label>
+        <label class="theme-option">
+          <input type="radio" name="theme" value="blue"> 블루 투스 테마
+        </label>
+        <label class="theme-option">
+          <input type="radio" name="theme" value="green"> 오크 그린 테마
+        </label>
+        <label class="theme-option">
+          <input type="radio" name="theme" value="red"> 레드 투스 테마
+        </label>
+        <label class="theme-option">
+          <input type="radio" name="theme" value="rainbow"> 레인보우 투스 테마🏳️‍🌈
+        </label>
+      </div>
+    </div>
+  </aside>
+
+  <div id="overlay" class="overlay"></div>
+
+  <div class="container">
+    <div class="search">
+      <input id="searchInput" type="search" placeholder="제목이나 태그로 검색..." />
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-grade="1">1학년</div>
+      <div class="tab" data-grade="2">2학년</div>
+      <div class="tab" data-grade="3">3학년</div>
+    </div>
+
+    <div id="list" class="list"></div>
+    <div id="emptyState" class="empty" style="display:none;">결과가 없어요.</div>
+  </div>
+
+  <script>
+    /* ------------------------------
+       📌 데이터 (중요: 원문 수정 X)
+       important: true/false 추가 가능
+    --------------------------------*/
+    const gradeEntries = {
+      1: [
+{ id:"simsimboy", title:"심심보이",
+          content:`심심보이는 놀랍게도 그분이 직접 만든 별명이 아니다. 하지만 어찌 밈화가 됬는지는 아무도 모른다. 그분의 옛 로블록스 닉네임이 " 심심한 새기 " 였는데 그것이 어찌하다 심심보이로 변형되었다. 어쩌면 전설은 우연에서 나올지도 모르겠다.`,
+          tags:["이름","베스트","레전드", "공식"], important:true },
+        { id:"walking death", title:"걸어다니는 죽음",
+          content:`걸어다니는 죽음은, 1학년 국어시간 그분이 만든 명함에서 유래되었다.
+해골이 그려진 명함, 선생님이 그분에게 이것은 무엇이냐 물었을때 그가 답했다. " 저 괴롭히는 형들 다 찢어 죽일라고요 "라며. 그 명함의 이름이 걸어다니는 죽음이였다. 왠지 위험할 것 같다.`,
+          tags:["죽음","명함","뿌듯","걸음", "레전드", "베스트", "공식"], important:true },
+
+        { id:"TearThemAll", title:"살인방법, 다 찢어 죽일라고",
+          content:`걸어다니는 죽음에서 유래가 되었다. 그분이 국어시간 발표에서 한 말, " 저 괴롭히는 형들 다 찢어 죽일라고요 " 라는 발언이 밈이 되어 석천중을 돌아다니고 있다.`,
+          tags:["행동","살인","학살","죽음"], important:false },
+
+        { id:"BBudt", title:"뿌듯함",
+          content:`그분이 걸어다니는 죽음을 발표 한 후, 자리에 앉을 때 뿌듯한 표정을 짓고 있었음에서 유래가 되었다. ( 하지만 여러 곳에서 사용 되었다. )`,
+          tags:["뿌듯","완벽","죽음"], important:false },
+
+        { id:"goldRing", title:"금 반지",
+          content:`그분이 어느날 학교에 금 반지를 들고와 약지에 끼고 가오를 부린 사건을 일컫는다.
+하지만 그분이 손에 낀 반지를 빼려는데 빠지지 않자 " 갱 사인(🤟☠️🤟)" 을 한 사건도 금반지 사건으로 일컫는다.`,
+          tags:["악세사리","갱","가오","금반지"], important:false },
+
+        { id:"worlds best garwe", title:"주먹을 이기는 가위✂️",
+          content:`1학년 어느 쉬는 시간, 가위바위보를 하며 놀고있는 선량한 준우에게 다가가 그분이 말했다. " 나랑도 가위바위보 하자? "
+그러고는 가위바위보를 시작했다. 하지만 그분이 가위를 내고, 준우가 주먹을 내어 그분이 졌지만, 그분이 말했다. " 내 가위는 주먹도 이겨. " 라는 말에서 유래되었다.`,
+          tags:["최강","챔피언","가위"], important:false },
+
+        { id:"boxing", title:"복싱, 힘과 속도",
+          content:`1학년 어느 날 그분이 어느 친구에게 다가가 말했다. " 너 복싱좀 하냐? "
+그러자 그 친구는 " 나 속도는 느린데 파워는 좀 있어. " 그러자 그는 사물함으로 다가가 능력을 발휘했다. " 나는 힘과 속도 둘 다 가지고있지 " 라 하며 마구마구 사물함을 줘팬 것에서 유래되었다. `,
+          tags:["명언","복싱","속도","힘"], important:false },
+
+{ id:"clap", title:"귀, 짝",
+          content:`그분이 1학년때, 한마 바키에 나오는 기술을 사용 한 사례 중 하나.
+손뼉을 상대 양손 귀에다가 치는것을 의미한다.
+당하면 귀가 저릿하며 이명이 짧게 들리는 효과가 있다.`,
+          tags:["귀","행동","한마바키"], important:false },
+
+        { id:"ssakssak", title:"가오의 대가, 싹싹 빌기",
+          content:`그분이 어느날, 가만히 있던 어느 친구에게 다가가 뺨을 2대 때렸다.
+그러자 맞은 친구는 격노하여 그분의 뒤로 가,
+목에 강렬한 초크를 걸었다. 그러자 그분은 손으로 싹싹 빌며 " 걱걱 미안 ( 싹싹 ) 미안 다신 안그럴게 " 와 같은 행동을 보인 것에서 유래되었다.`,
+          tags:["행동","미안함","싹싹","슬픔"], important:false },
+
+        { id:"boss", title:"이곳의 두목",
+          content:`어느날 어느 친구가 반에 와서 우리에게 물었다. 이곳의 일짱이 누구냐고.
+그때 그분이 말했다.
+"내가 여기 두목이다"라며.
+그분은 말했다.
+그 곳에서 유래되었다.`,
+          tags:["두목","보스","최강","일짱"], important:false },
+
+        { id:"bring", title:"갖고 와 이씨",
+          content:`그분이 급식을 먹는 한 친구에게 급식을 뜯을때 했던 말이다.
+정확히는 급식을 먹던 준우가 남긴 반찬을
+그분이 먹고싶었을까, " 갖고 와 이씨! " 라며
+아주 위협적으로 급식을 앗아간 것에서 유래되었다.`,
+          tags:["행동","급식","가오"], important:false },
+
+        { id:"walkMotion", title:"걷는 모습/움직임 ",
+          content:`그분은 걸어다닐때, 가슴을 부풀리고 어깨를 넓게 펴 보이듯 걸어다녔다.
+다른 친구들보다 유독 눈에 띄는 방식이였다.`,
+          tags:["행동","가오","걸음"], important:false },
+      ],
+
+      2: [
+
+{ id:"yea", title:"됐다!",
+          content:`2025년, 학교에 ai 캠프를 하던 날이였다. 어느 게임 진행 중, 그분이 가위바위보를 이겨야만 그분 팀에게 유리했다. 모두의 염원이 담긴 목소리가 결실을 맺었다. 그분이 가위바위보를 이기며 남긴 전설의 말이다.`,
+          tags:["명언","레전드","뿌듯","베스트"], important:true },
+
+{ id:"now", title:"지금",
+          content:`그분은 가만히 있는 친구에게 가서몸을 뒤로 숙이고 두손가락을 핀 채 사람을 찌르는 지금이라는 기술을 사용하는것을 좋아하였다.
+그것이 웃기다는 이유로 밈화가 되었다.
+왠지 원피스의 지건과 닮아있는 듯 하다.`,
+          tags:["행동","학살"], important:false },
+
+{ id:"cutesep", title:"큐티셉",
+          content:`2학년 담임이신 백은송 선생님께서 가장 좋아하시는 별명이다. 기가 수업때 선생님께서 그분에게 " 오 귀엽네 " 라 말한 것을
+준우가 ".. 큐티셉? " 이라 각색하여 생긴 별명.
+큐티셉이 널리 사용되며 우리학교 유명 인사가 되었다. 축제때도 응원으로 큐티셉을 외치는 사람이 몇몇 있다.`,
+          tags:["뿌듯","공식","큐티"], important:false },
+
+        { id:"piroot", title:"파이 = 루트",
+          content:`파이는 루트라는 수학 공식은 이 세상 어디에도 없다, 하지만 그분은 파이와 루트가 같다고 늘 말씀하신다. ( 어쩌면 천재일지도 모르겠다.. )`,
+          tags:["수학공식","파이루트","논리"], important:false },
+
+{ id:"cupid", title:"목성은 큐피트",
+          content:`어느 2학년 과학시간, 행성을 배우는 시간에서 목성의 영어명 Jupiter가 나왔다.
+선생님께서 주피터의 뜻이 무엇인지 아는 사람을 물었을때 그분이 손을 들고는 얘기했다. " 큐피트요! " 그러자 아이들은 웃었다. 알고보니 주피터는 큐피트가 아니라 천둥의 신 제우스였던 것이다, 그 이후로부터 친구들 사이에서 활을 쏘는 시늉이 잠시 유행했었다.`,
+          tags:["오해","논리"], important:false },
+
+{ id:"simsimstorm", title:"일격 필살, 심심스톰",
+          content:`심심 스톰은, 2학년 어느날 비가 아주 강하게 오던날, 밖에 아주 강한 천둥이 다수 치던날, 시훈이는 밖에 활을 쏘는 시늉을 하며,
+" 시이이임, 시이이임, 스토오오옴! " 이라며 외친것이 심심 스톰이라 불린다.`,
+          tags:["행동","최강","뿌듯"], important:false },
+
+{ id:"ddom", title:"똠양국",
+          content:`그분이 급식실에서 병호와 준우가 하는 얘기를 들었다. " 오늘 황태국 나오네 " 그러자 그분은 잘못 들었는지, " 어? 똠양국 나온다고? " 라고 대답을 한 것이 밈으로 발전하였다.`,
+          tags:["귀","오해","급식"], important:false },
+
+{ id:"wasabi", title:"와사비",
+          content: `그분이 서후와 급식을 먹고 있을때 말했다. 그날의 메뉴는 메밀소바였다. 그날 그분이 서후에게 말했다. " 아니, 우리학교는 왜 맨날 와사비를 넣는거야? " 문제는 메밀소바는 원래 와사비가 기본으로 들어간다는 점이다. 그 말이 밈화되어 와사비가 되었다. `,
+          tags:["오해","급식"], important:false },
+
+        { id:"gun", title:"총알이 위로 휘어!",
+          content:`그분이 체육시간에 우리에게 말했다. " 나 총알이 위로 휘어! " 다른 친구들이 말이 안된다며 그분을 설득했지만 그는 의견을 굽히지 않고 " 아니, 진짜라니까? " 라고 하며 반박한 사건을 일컫는다.`,
+          tags:["게임","총알","논리"], important:false },
+
+        { id:"slaughter", title:"학살자 / 아 시발 안해",
+          content:`그분과 피시방에서 있었던 일이다. 로블록스 forsaken이라는 게임을 플레이하며
+놀고 있던 그분. 하지만 본인의 캐릭터 "학살자"가 다른 사람을 잡지 못하는 것에 격노하여 " 아 시발 안해 " 라며 소리를 질렀다는 것에서 유래되었다.`,
+          tags:["게임","욕","학살"], important:false },
+
+        { id:"wolyoil", title:"월요일이 마지막으로 웃는 날이 될거야",
+          content:`그분이 태수에게 격노하여 말한 것에서 유래되었다. 준우는 태수가 한 일을 그분께 일러바쳤다, 그때 그분은 말했다. " 태수는 월요일이 마지막으로 웃는 날이 될거야. "`,
+          tags:["가오","행동"], important:false },
+
+
+      ],
+
+      3: [
+
+]
+    };
+
+
+    let currentGrade = 1;
+
+    const listEl = document.getElementById("list");
+    const emptyEl = document.getElementById("emptyState");
+    const searchInput = document.getElementById("searchInput");
+
+
+    /* ------------------------------
+       📌 메뉴 버튼
+    --------------------------------*/
+    const menuBtn = document.getElementById("menuBtn");
+    const sideMenu = document.getElementById("sideMenu");
+    const closeMenu = document.getElementById("closeMenu");
+    const overlay = document.getElementById("overlay");
+
+    menuBtn.onclick = () => {
+      sideMenu.classList.add("open");
+      overlay.classList.add("show");
+    };
+
+    closeMenu.onclick = () => {
+      sideMenu.classList.remove("open");
+      overlay.classList.remove("show");
+    };
+
+    overlay.onclick = closeMenu;
+
+
+    /* ------------------------------
+       📌 메뉴 탭 전환
+    --------------------------------*/
+    document.querySelectorAll(".side-tab").forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll(".side-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        document.querySelectorAll(".panel").forEach(p => p.style.display = "none");
+
+        document.getElementById("panel-" + tab.dataset.panel).style.display = "block";
+      };
+    });
+
+
+    /* ------------------------------
+       📌 테마 변경
+    --------------------------------*/
+    document.querySelectorAll("input[name='theme']").forEach(radio => {
+      radio.onchange = () => {
+        document.body.classList.remove("light", "blue", "green", "red", "rainbow");
+        if (radio.value !== "dark") {
+          document.body.classList.add(radio.value);
+        }
+      };
+    });
+
+
+    /* ------------------------------
+       📌 아이템 생성
+    --------------------------------*/
+    function makeItem(entry) {
+      const item = document.createElement("div");
+      item.className = "item";
+      if (entry.important) item.classList.add("important");
+
+      const header = document.createElement("div");
+      header.className = "item-header";
+
+      const left = document.createElement("div");
+      left.style.display = "flex";
+      left.style.flexDirection = "column";
+      left.style.gap = "6px";
+
+      const title = document.createElement("div");
+      title.className = "title";
+      title.textContent = entry.title;
+
+      const tagsWrap = document.createElement("div");
+      tagsWrap.className = "tags";
+
+      entry.tags.forEach(t => {
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = t;
+        tagsWrap.appendChild(tag);
+      });
+
+      left.appendChild(title);
+      if (entry.tags.length) left.appendChild(tagsWrap);
+
+      const right = document.createElement("div");
+      right.className = "chevron";
+      right.textContent = "›";
+
+      header.appendChild(left);
+      header.appendChild(right);
+
+      const content = document.createElement("div");
+      content.className = "content";
+
+      const inner = document.createElement("div");
+      inner.className = "content-inner";
+      inner.textContent = entry.content;
+
+      content.appendChild(inner);
+
+      header.onclick = () => {
+        const isOpen = item.classList.contains("open");
+        document.querySelectorAll(".item.open").forEach(e => e.classList.remove("open"));
+        if (!isOpen) item.classList.add("open");
+      };
+
+      item.appendChild(header);
+      item.appendChild(content);
+      return item;
+    }
+
+
+    /* ------------------------------
+       📌 렌더링
+    --------------------------------*/
+    function render(q = "") {
+      listEl.innerHTML = "";
+      const text = q.trim().toLowerCase();
+
+      const filtered = gradeEntries[currentGrade].filter(e => {
+        if (!text) return true;
+        const hay = e.title.toLowerCase() + " " + e.tags.join(" ").toLowerCase();
+        return hay.includes(text);
+      });
+
+      if (filtered.length === 0) {
+        emptyEl.style.display = "block";
+        return;
+      }
+      emptyEl.style.display = "none";
+
+      filtered.forEach(e => listEl.appendChild(makeItem(e)));
+    }
+
+    searchInput.oninput = (e) => render(e.target.value);
+
+
+    /* ------------------------------
+       📌 학년 탭 전환
+    --------------------------------*/
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        currentGrade = parseInt(tab.dataset.grade, 10);
+        render(searchInput.value);
+      };
+    });
+
+
+    /* 초기 렌더 */
+    render();
+  </script>
+
+</body>
+</html>
