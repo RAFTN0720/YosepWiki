@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>대법전 / 요셉위키</title>
+  
+<link rel="icon" href="favicon.png" type="image/png">
 
   <style>
     :root {
@@ -339,6 +341,7 @@
   font-family: system-ui, sans-serif;">
   
   <h2 style="margin:0;">🔒 비밀번호 입력</h2>
+  <h5 style="margin:0;"> 무단으로 들어가면 다 찢어 죽입니다.</h5>
   <input id="pwInput" type="password" placeholder="비밀번호..." 
     style="padding:10px 14px; border-radius:8px; border:1px solid #444; background:#111; color:white;">
   <button onclick="checkPW()" 
@@ -350,7 +353,7 @@
 </div>
 
 <script>
-  const PASSWORD = "16899"; // ← 여기 원하는 비밀번호로 설정
+  const PASSWORD = "17599"; // ← 여기 원하는 비밀번호로 설정
 
   function checkPW() {
     const v = document.getElementById("pwInput").value;
