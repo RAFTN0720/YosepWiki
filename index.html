@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>온라인 대법전 / 요셉위키</title>
+  <title>대법전 / 요셉위키</title>
 
   <style>
     :root {
@@ -27,7 +27,7 @@
     /* 헤더 */
     header {
       padding: 18px 20px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--border);
       background: linear-gradient(0deg, var(--panel), #12161c);
       position: sticky;
       top: 0;
@@ -58,7 +58,7 @@
       width: 260px;
       height: 100%;
       background: var(--panel);
-      border-left: 2px solid var(--border);
+      border-left: 3px solid var(--border);
       transition: right 0.25s ease;
       z-index: 50;
       padding: 14px;
@@ -323,9 +323,50 @@
   </style>
 </head>
 <body>
+    <!-- 비번 -->
+    
+<div id="pwLock" style="
+  position: fixed;
+  inset: 0;
+  background: #0f1217;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  z-index: 9999;
+  color: white;
+  font-family: system-ui, sans-serif;">
+  
+  <h2 style="margin:0;">🔒 비밀번호 입력</h2>
+  <input id="pwInput" type="password" placeholder="비밀번호..." 
+    style="padding:10px 14px; border-radius:8px; border:1px solid #444; background:#111; color:white;">
+  <button onclick="checkPW()" 
+    style="padding:10px 18px; border-radius:8px; border:0; background:#4ea1ff; color:white; cursor:pointer;">
+    확인
+  </button>
+
+  <p id="pwMsg" style="color:#ff6b6b; height:20px;"></p>
+</div>
+
+<script>
+  const PASSWORD = "16899"; // ← 여기 원하는 비밀번호로 설정
+
+  function checkPW() {
+    const v = document.getElementById("pwInput").value;
+    const msg = document.getElementById("pwMsg");
+
+    if(v === PASSWORD) {
+      document.getElementById("pwLock").style.display = "none";
+    } else {
+      msg.textContent = "비밀번호가 틀렸습니다.";
+    }
+  }
+</script>
+<!--여기가 끝-->
 
   <header>
-    <h1>☠️🌎️온라인 대법전 / 요셉위키🌎️☠️</h1>
+    <h1>🌎️ 대법전 / 요셉위키🌎️</h1>
     <div id="menuBtn" class="menu-btn">☰</div>
   </header>
 
@@ -420,7 +461,7 @@
 해골이 그려진 명함, 선생님이 그분에게 이것은 무엇이냐 물었을때 그가 답했다. " 저 괴롭히는 형들 다 찢어 죽일라고요 "라며. 그 명함의 이름이 걸어다니는 죽음이였다. 왠지 위험할 것 같다.`,
           tags:["죽음","명함","뿌듯","걸음", "레전드", "베스트", "공식"], important:true },
 
-        { id:"TearThemAll", title:"살인방법, 다 찢어 죽일라고",
+        { id:"TearThemAll", title:"살인방법, 다 찢어 죽일라고 흐흐",
           content:`걸어다니는 죽음에서 유래가 되었다. 그분이 국어시간 발표에서 한 말, " 저 괴롭히는 형들 다 찢어 죽일라고요 " 라는 발언이 밈이 되어 석천중을 돌아다니고 있다.`,
           tags:["행동","살인","학살","죽음"], important:false },
 
@@ -438,10 +479,18 @@
 그러고는 가위바위보를 시작했다. 하지만 그분이 가위를 내고, 준우가 주먹을 내어 그분이 졌지만, 그분이 말했다. " 내 가위는 주먹도 이겨. " 라는 말에서 유래되었다.`,
           tags:["최강","챔피언","가위"], important:false },
 
+  { id:"spining", title:"스피닝 엘보우",
+          content:`그분이 예전에 사용하신 기술, 어깨를 옆으로 강하게 돌리며 상대를 가격하는 기술이다. 그분이 어째서 이 기술을 터득하였는지는 외모 지상 주의를 보면 잘 나와있다.`,
+          tags:["가오","행동"], important:false },
+
         { id:"boxing", title:"복싱, 힘과 속도",
           content:`1학년 어느 날 그분이 어느 친구에게 다가가 말했다. " 너 복싱좀 하냐? "
 그러자 그 친구는 " 나 속도는 느린데 파워는 좀 있어. " 그러자 그는 사물함으로 다가가 능력을 발휘했다. " 나는 힘과 속도 둘 다 가지고있지 " 라 하며 마구마구 사물함을 줘팬 것에서 유래되었다. `,
           tags:["명언","복싱","속도","힘"], important:false },
+
+  { id:"piroot", title:"√=π",
+          content:`파이는 루트라는 수학 공식은 이 세상 어디에도 없다, 하지만 그분은 파이와 루트가 같다고 늘 말씀하신다. ( 어쩌면 천재일지도 모르겠다.. )`,
+          tags:["수학공식","파이루트","논리"], important:false },
 
 { id:"clap", title:"귀, 짝",
           content:`그분이 1학년때, 한마 바키에 나오는 기술을 사용 한 사례 중 하나.
@@ -476,7 +525,7 @@
           tags:["행동","가오","걸음"], important:false },
       ],
 
-      2: [
+      2: [ <!--2학년꺼임 제발 구분좀 하자!!!! 햇갈린다 이제는 ㅜ -->_______________________________
 
 { id:"yea", title:"됐다!",
           content:`2025년, 학교에 ai 캠프를 하던 날이였다. 어느 게임 진행 중, 그분이 가위바위보를 이겨야만 그분 팀에게 유리했다. 모두의 염원이 담긴 목소리가 결실을 맺었다. 그분이 가위바위보를 이기며 남긴 전설의 말이다.`,
@@ -494,9 +543,13 @@
 큐티셉이 널리 사용되며 우리학교 유명 인사가 되었다. 축제때도 응원으로 큐티셉을 외치는 사람이 몇몇 있다.`,
           tags:["뿌듯","공식","큐티"], important:false },
 
-        { id:"piroot", title:"파이 = 루트",
+        { id:"piroot", title:"√=π",
           content:`파이는 루트라는 수학 공식은 이 세상 어디에도 없다, 하지만 그분은 파이와 루트가 같다고 늘 말씀하신다. ( 어쩌면 천재일지도 모르겠다.. )`,
-          tags:["수학공식","파이루트","논리"], important:false },
+          tags:["수학공식","논리"], important:false },
+
+        { id:"8zegop", title:"8²=16",
+          content:`8의 제곱은 16이라는 수식 또한 절대 없다, 하지만 그분은 만들어냈다. 새로운 수식이다. 8이 제곱되면 8*8 = 64이지만, 그분의 논리로는 8*2가 되어 16이 나온다.`,
+          tags:["수학공식","논리"], important:false },
 
 { id:"cupid", title:"목성은 큐피트",
           content:`어느 2학년 과학시간, 행성을 배우는 시간에서 목성의 영어명 Jupiter가 나왔다.
@@ -511,6 +564,10 @@
 { id:"ddom", title:"똠양국",
           content:`그분이 급식실에서 병호와 준우가 하는 얘기를 들었다. " 오늘 황태국 나오네 " 그러자 그분은 잘못 들었는지, " 어? 똠양국 나온다고? " 라고 대답을 한 것이 밈으로 발전하였다.`,
           tags:["귀","오해","급식"], important:false },
+
+  { id:"piroot", title:"너 나랑 한판 하자? 아이고- ",
+          content:`펜으로 선을 그리면 선 따라가는 로봇을 배운 시간에 그분이 가위바위보 맵을 만들었다, 그분은 준우와 하고싶었는지 그분은 종이를 내밀며 준우에게 " 너 나랑 한판 하자?라며 가오있게 말했지만, 준우는 듣지 못했고, 그분이 뻘쭘하여 "아이고" 라고 한 사건을 일컫는다. 이 사건은 많은 이들을 웃게 만들었다.`,
+          tags:["수학공식","파이루트","논리"], important:false },
 
 { id:"wasabi", title:"와사비",
           content: `그분이 서후와 급식을 먹고 있을때 말했다. 그날의 메뉴는 메밀소바였다. 그날 그분이 서후에게 말했다. " 아니, 우리학교는 왜 맨날 와사비를 넣는거야? " 문제는 메밀소바는 원래 와사비가 기본으로 들어간다는 점이다. 그 말이 밈화되어 와사비가 되었다. `,
