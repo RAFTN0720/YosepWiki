@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>대법전 / 요셉위키</title>
+<title>대법전 / 요셉위키 & 실시간 퀴즈</title>
 
 <link rel="icon" href="favicon.png" type="image/png">
 
@@ -16,6 +16,8 @@
 --accent: #4ea1ff;
 --border: #223042;
 --moredarker: #10151b;
+--success: #2ecc71;
+--error: #e74c3c;
 }
 
 body {
@@ -42,7 +44,6 @@ font-size: 18px;
 letter-spacing: 0.3px;
 }
 
-/* 메뉴 버튼 */
 .menu-btn {
 position: absolute;
 right: 20px;
@@ -52,7 +53,6 @@ cursor: pointer;
 user-select: none;
 }
 
-/* 오른쪽 슬라이드 메뉴 */
 .side-menu {
 position: fixed;
 top: 0;
@@ -87,17 +87,18 @@ cursor: pointer;
 }
 
 .side-tabs {
-display: flex;
+display: grid;
+grid-template-columns: 1fr 1fr;
 gap: 6px;
 margin-top: 14px;
 }
 .side-tab {
-flex: 1;
 text-align: center;
 padding: 8px;
 background: var(--border);
 border-radius: 6px;
 cursor: pointer;
+font-size: 13px;
 }
 .side-tab.active {
 background: var(--accent);
@@ -116,7 +117,6 @@ padding: 6px 0;
 cursor: pointer;
 }
 
-/* 오버레이 */
 .overlay {
 position: fixed;
 inset: 0;
@@ -128,11 +128,17 @@ z-index: 40;
 display: block;
 }
 
-/* 콘텐츠 */
 .container {
 max-width: 860px;
 margin: 0 auto;
 padding: 16px;
+}
+
+.main-section {
+display: none;
+}
+.main-section.active {
+display: block;
 }
 
 .search {
@@ -150,13 +156,12 @@ background: var(--panel);
 color: var(--text);
 }
 
-/* 학년 탭 */
-.tabs {
+.tabs, .quiz-sub-tabs {
 display: flex;
 gap: 8px;
 margin-bottom: 20px;
 }
-.tab {
+.tab, .quiz-sub-tab {
 flex: 1;
 text-align: center;
 padding: 10px;
@@ -165,13 +170,12 @@ border: 1px solid var(--border);
 background: var(--panel);
 cursor: pointer;
 }
-.tab.active {
+.tab.active, .quiz-sub-tab.active {
 background: var(--accent);
 color: #fff;
 font-weight: bold;
 }
 
-/* 리스트 */
 .list {
 display: flex;
 flex-direction: column;
@@ -232,121 +236,209 @@ border-radius: 99px;
 padding: 2px 8px;
 }
 
-/* important 강조 스타일 */
 .item.important .item-header {
-background: #3a2f00; 
-border: 2px solid #ffd700; 
-border-radius: 12px; 
-padding: 10px; 
+background: #3a2f00;
+border: 2px solid #ffd700;
+border-radius: 12px;
+padding: 10px;
 }
 
 .item.important .title {
-color: #ffd700; 
+color: #ffd700;
 font-weight: 700;
-text-shadow: 1px 1px 2px #b38f00; 
+text-shadow: 1px 1px 2px #b38f00;
 }
 
-/* 라이트 테마 */
-body.light {
---bg: #eef2f6;
---panel: #ffffff;
---text: #222;
---border: #ccd3dd;
---accent: #4ea1ff;
---muted: #75859a;
---moredarker: #c1d1dd;
+/* 🎮 퀴즈 전용 스타일 */
+.quiz-container {
+max-width: 600px;
+margin: 0 auto;
+}
+.quiz-sub-section {
+display: none;
+}
+.quiz-sub-section.active {
+display: block;
+}
+.quiz-stats {
+display: flex;
+justify-content: space-between;
+background: var(--panel);
+border: 1px solid var(--border);
+border-radius: 12px;
+padding: 14px 20px;
+margin-bottom: 20px;
+font-weight: 600;
+}
+.stat-item span {
+color: var(--accent);
+}
+.quiz-card {
+background: var(--panel);
+border: 1px solid var(--border);
+border-radius: 16px;
+padding: 24px;
+margin-bottom: 20px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.question-header {
+font-size: 13px;
+color: var(--muted);
+letter-spacing: 1px;
+margin-bottom: 10px;
+display: flex;
+justify-content: space-between;
+}
+.question-text {
+font-size: 17px;
+font-weight: 600;
+line-height: 1.6;
+background: var(--moredarker);
+padding: 16px;
+border-radius: 12px;
+border-left: 4px solid var(--accent);
+white-space: pre-wrap;
+margin-bottom: 24px;
+}
+.options-list {
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+.option-btn {
+background: var(--moredarker);
+color: var(--text);
+border: 1px solid var(--border);
+padding: 14px 18px;
+border-radius: 10px;
+text-align: left;
+font-size: 15px;
+font-weight: 500;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+.option-btn:hover {
+border-color: var(--accent);
+background: var(--panel);
+}
+.result-message {
+margin-top: 20px;
+padding: 14px;
+border-radius: 10px;
+text-align: center;
+font-weight: bold;
+display: none;
+font-size: 16px;
+}
+.result-message.correct {
+display: block;
+background: rgba(46, 204, 113, 0.15);
+color: var(--success);
+border: 1px solid var(--success);
+}
+.result-message.wrong {
+display: block;
+background: rgba(231, 76, 60, 0.15);
+color: var(--error);
+border: 1px solid var(--error);
+}
+.next-btn {
+width: 100%;
+background: var(--accent);
+color: white;
+border: 0;
+padding: 14px;
+border-radius: 10px;
+font-size: 16px;
+font-weight: bold;
+cursor: pointer;
+margin-top: 15px;
+display: none;
 }
 
-/* 블루 테마 */
-body.blue {
---bg: #0d1a2a;
---panel: #102334;
---text: #e8f5ff;
---border: #24435e;
---accent: #4ea1ff;
---muted: #879cb4;
---moredarker: #252545;
+/* 리더보드 테이블 */
+.rank-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 10px;
+background: var(--panel);
+border-radius: 12px;
+overflow: hidden;
+border: 1px solid var(--border);
+}
+.rank-table th, .rank-table td {
+padding: 12px 15px;
+text-align: left;
+}
+.rank-table th {
+background: var(--border);
+color: var(--accent);
+font-size: 14px;
+}
+.rank-table tr {
+border-bottom: 1px solid var(--border);
+}
+.rank-table tr:last-child {
+border-bottom: none;
+}
+.rank-table tr.my-rank {
+background: rgba(78, 161, 255, 0.15);
+font-weight: bold;
+border-left: 4px solid var(--accent);
 }
 
-body.red {
---bg: #2a0d0f; 
---panel: #341019; 
---text: #ffe8e8; 
---border: #6b2e3a; 
---accent: #ff6b8f; 
---muted: #a87a8c; 
---moredarker: #33221a; 
-}
-
-body.yellow {
---bg: #fffbe6; 
---panel: #fff1a8; 
---text: #3a2e00; 
---border: #d4b96a; 
---accent: #ffe066; 
---muted: #000000; 
---moredarker: #f5e88e;
-}
-
-body.rainbow {
---panel: rgba(255, 255, 255, 0.15); 
---text: #ffffff; 
---border: #ffffff33; 
---accent: #ffd700; 
---muted: #ffffff55; 
---moredarker: #ffffff22; 
-
-animation: rainbowBG 20s linear infinite;
-background: linear-gradient(999deg, #ff6b6b, #f9ca24, #6ab04c, #2980b9, #8e44ad, #ff6b6b);
-background-size: 300% 300%; 
-}
-
-@keyframes rainbowBG {
-0% { background-position: 0% 50%; }
-50% { background-position: 100% 50%; }
-100% { background-position: 0% 50%; }
-}
+/* 테마들 */
+body.light { --bg: #eef2f6; --panel: #ffffff; --text: #222; --border: #ccd3dd; --accent: #4ea1ff; --muted: #75859a; --moredarker: #c1d1dd; }
+body.blue { --bg: #0d1a2a; --panel: #102334; --text: #e8f5ff; --border: #24435e; --accent: #4ea1ff; --muted: #879cb4; --moredarker: #252545; }
+body.green { --bg: #0d2a1a; --panel: #103422; --text: #e8ffe8; --border: #2e6b3e; --accent: #4eff6b; --muted: #7aa87a; --moredarker: #1a3322; }
+body.red { --bg: #2a0d0f; --panel: #341019; --text: #ffe8e8; --border: #6b2e3a; --accent: #ff6b8f; --muted: #a87a8c; --moredarker: #33221a; }
+body.yellow { --bg: #fffbe6; --panel: #fff1a8; --text: #3a2e00; --border: #d4b96a; --accent: #ffe066; --muted: #000000; --moredarker: #f5e88e; }
+body.rainbow { --panel: rgba(255, 255, 255, 0.15); --text: #ffffff; --border: #ffffff33; --accent: #ffd700; --muted: #ffffff55; --moredarker: #ffffff22; animation: rainbowBG 20s linear infinite; background: linear-gradient(999deg, #ff6b6b, #f9ca24, #6ab04c, #2980b9, #8e44ad, #ff6b6b); background-size: 300% 300%; }
+@keyframes rainbowBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 </style>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// 복사해온 가방 정보 깔끔하게 연동 완료!
+const firebaseConfig = {
+  apiKey: "AIzaSyBzb2S0LkS3eNSYP5efWR-yHFKojtlGsTw",
+  authDomain: "yoseph-wiki.firebaseapp.com",
+  projectId: "yoseph-wiki",
+  storageBucket: "yoseph-wiki.firebasestorage.app",
+  messagingSenderId: "1071149006565",
+  appId: "1:1071149006565:web:d827037a3e212d12c6de0c"
+};
+
+const app = initializeApp(firebaseConfig);
+window.db = getFirestore(app);
+window.addDoc = addDoc;
+window.collection = collection;
+window.getDocs = getDocs;
+window.query = query;
+window.orderBy = orderBy;
+window.limit = limit;
+console.log("Firebase 파이어베이스 서버 연결 완료 이씨!");
+</script>
+
 </head>
 <body>
 
-<div id="pwLock" style="
-position: fixed;
-inset: 0;
-background: #0f1217;
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-gap: 14px;
-z-index: 9999;
-color: white;
-font-family: system-ui, sans-serif;">
-
-<h2 style="margin:0;">🔒 비밀번호 입력</h2>
-<h5 style="margin:0;"> 무단으로 들어가면 다 찢어 죽입니다.</h5>
-<input id="pwInput" type="password" placeholder="비밀번호..."
-style="padding:10px 14px; border-radius:8px; border:1px solid #444; background:#111; color:white;">
-<button onclick="checkPW()"
-style="padding:10px 18px; border-radius:8px; border:0; background:#4ea1ff; color:white; cursor:pointer;">
-확인
-</button>
-
+<div id="pwLock" style="position: fixed; inset: 0; background: #0f1217; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 14px; z-index: 9999; color: white;">
+<h2>🔒 비밀번호 입력</h2>
+<h5> 무단으로 들어가면 다 찢어 죽입니다.</h5>
+<input id="pwInput" type="password" placeholder="비밀번호..." style="padding:10px 14px; border-radius:8px; border:1px solid #444; background:#111; color:white;">
+<button onclick="checkPW()" style="padding:10px 18px; border-radius:8px; border:0; background:#4ea1ff; color:white; cursor:pointer;">확인</button>
 <p id="pwMsg" style="color:#ff6b6b; height:20px;"></p>
 </div>
 
 <script>
-const PASSWORD = "17599"; 
-
+const PASSWORD = "17599";
 function checkPW() {
 const v = document.getElementById("pwInput").value;
-const msg = document.getElementById("pwMsg");
-
-if(v === PASSWORD) {
-document.getElementById("pwLock").style.display = "none";
-} else {
-msg.textContent = "비밀번호가 틀렸습니다.";
-}
+if(v === PASSWORD) { document.getElementById("pwLock").style.display = "none"; }
+else { document.getElementById("pwMsg").textContent = "비밀번호가 틀렸습니다."; }
 }
 </script>
 
@@ -355,61 +447,25 @@ msg.textContent = "비밀번호가 틀렸습니다.";
 <div id="menuBtn" class="menu-btn">☰</div>
 </header>
 
-<!-- 오른쪽 메뉴 -->
 <aside id="sideMenu" class="side-menu">
-<div class="side-header">
-<span>메뉴🔨</span>
-<button id="closeMenu" class="close-btn">✕</button>
-</div>
-
+<div class="side-header"><span>메뉴🔨</span><button id="closeMenu" class="close-btn">✕</button></div>
 <div class="side-tabs">
 <div class="side-tab active" data-panel="wiki">📘 위키</div>
+<div class="side-tab" data-panel="quiz">🎮 퀴즈</div>
 <div class="side-tab" data-panel="desc">📄 설명</div>
 <div class="side-tab" data-panel="settings">⚙ 설정</div>
 </div>
-
 <div class="side-content">
-<div class="panel" id="panel-wiki" style="display:block;">
-<h1>요셉위키</h1>
-<p>현재 위키 페이지를 보고 있습니다, 대법전 온라인 위키입니다.
-불법 공유 시 다 찢어죽입니다.</p>
-</div>
-
-<div class="panel" id="panel-desc" style="display:none;">
-<h1>설명</h1>
-<h3> 제작 - 윤서후🔨 </h3>
-<h4> 도움 - 조준우, 채병호, 최요셉, 조태수🔎🤟</h4>
-<p>요셉위키는 김천 석천 중학교 최요셉의 별명/이야기 대법전입니다.
-요셉이가 만들어달라는 요청을 하였습니다
-
-이 이야기의 저작권, 소유는 모두 최요셉에게 있습니다.</p>
-
-<div style="padding-top:50px; text-align:center;">
-<img src="https://i.ibb.co/dwS723Hz/image.png" alt="image" width="200">
-</div>
-</div>
-
-<div class="panel" id="panel-settings" style="display:none;">
-<h3>테마 변경</h3>
-
-<label class="theme-option">
-<input type="radio" name="theme" value="dark" checked> 다크 투스 테마
-</label>
-<label class="theme-option">
-<input type="radio" name="theme" value="light"> 라이트 테마
-</label>
-<label class="theme-option">
-<input type="radio" name="theme" value="blue"> 블루 투스 테마
-</label>
-<label class="theme-option">
-<input type="radio" name="theme" value="green"> 오크 그린 테마
-</label>
-<label class="theme-option">
-<input type="radio" name="theme" value="red"> 레드 투스 테마
-</label>
-<label class="theme-option">
-<input type="radio" name="theme" value="rainbow"> 레인보우 투스 테마🏳️‍🌈
-</label>
+<div class="panel" id="panel-wiki" style="display:block;"><h1>요셉위키</h1><p>현재 위키 페이지, 대법전 온라인 위키입니다. 불법 공유 시 다 찢어죽입니다.</p></div>
+<div class="panel" id="panel-quiz" style="display:none;"><h1>대법전 퀴즈</h1><p>실시간으로 연동되는 서천중 탑 랭킹 리더보드에 도전하세요!</p></div>
+<div class="panel" id="panel-desc" style="display:none;"><h1>설명</h1><h3> 제작 - 윤서후🔨 </h3><h4> 도움 - 조준우, 채병호, 최요셉, 조태수🔎🤟</h4><p>요셉위키는 김천 석천 중학교 최요셉의 별명/이야기 대법전입니다.</p></div>
+<div class="panel" id="panel-settings" style="display:none;"><h3>테마 변경</h3>
+<label class="theme-option"><input type="radio" name="theme" value="dark" checked> 다크 투스 테마</label>
+<label class="theme-option"><input type="radio" name="theme" value="light"> 라이트 테마</label>
+<label class="theme-option"><input type="radio" name="theme" value="blue"> 블루 투스 테마</label>
+<label class="theme-option"><input type="radio" name="theme" value="green"> 오크 그린 테마</label>
+<label class="theme-option"><input type="radio" name="theme" value="red"> 레드 투스 테마</label>
+<label class="theme-option"><input type="radio" name="theme" value="rainbow"> 레인보우 투스 테마🏳️‍🌈</label>
 </div>
 </div>
 </aside>
@@ -417,284 +473,359 @@ msg.textContent = "비밀번호가 틀렸습니다.";
 <div id="overlay" class="overlay"></div>
 
 <div class="container">
-<div class="search">
-<input id="searchInput" type="search" placeholder="제목이나 태그로 검색..." />
-</div>
 
+<div id="section-wiki" class="main-section active">
+<div class="search"><input id="searchInput" type="search" placeholder="제목이나 태그로 검색..." /></div>
 <div class="tabs">
 <div class="tab active" data-grade="1">1학년</div>
 <div class="tab" data-grade="2">2학년</div>
 <div class="tab" data-grade="3">3학년</div>
 </div>
-
 <div id="list" class="list"></div>
 <div id="emptyState" class="empty" style="display:none;">결과가 없어요.</div>
 </div>
 
+<div id="section-quiz" class="main-section">
+<div class="quiz-container">
+<div class="quiz-sub-tabs">
+<div class="quiz-sub-tab active" data-sub="play">⚔️ 퀴즈 풀기</div>
+<div class="quiz-sub-tab" data-sub="leaderboard" onclick="loadRealLeaderboard()">🏆 실시간 랭킹</div>
+</div>
+
+<div id="quiz-sub-play" class="quiz-sub-section active">
+<div class="quiz-stats">
+<div class="stat-item">내 닉네임: <span id="myUsernameText">-</span></div>
+<div class="stat-item">점수: <span id="scoreText">0</span>점</div>
+<div class="stat-item">연속 🔥: <span id="comboText">0</span></div>
+</div>
+<div class="quiz-card">
+<div class="question-header"><span id="gradeInfo">힌트 로딩중...</span><span>요셉 상식 테스트 ⚔️</span></div>
+<div id="questionText" class="question-text">문제가 출제되는 구역입니다.</div>
+<div id="optionsList" class="options-list"></div>
+<div id="resultMessage" class="result-message"></div>
+<button id="nextBtn" class="next-btn" onclick="nextQuestion()">다음 문제 가져와 이씨 ➡️</button>
+</div>
+</div>
+
+<div id="quiz-sub-leaderboard" class="quiz-sub-section">
+<div class="quiz-card">
+<h3 style="margin-top:0; color:var(--accent);">🏆 전교 탑 10 명예의 전당</h3>
+<p style="font-size:12px; color:var(--muted); margin-bottom:15px;">전국의 도전자들이 기록한 실시간 점수판입니다. (1문당 10점)</p>
+<table class="rank-table">
+<thead><tr><th>순위</th><th>도전자 닉네임</th><th>최종 점수</th></tr></thead>
+<tbody id="realLeaderboardBody"><tr><td colspan="3" style="text-align:center; color:var(--muted);">서버에서 랭킹을 불러오는 중...</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
 <script>
+/* 질문 데이터 풀 */
+const quizAnswerPool = ["걸어다니는 죽음", "심심보이", "내가 여기 두목이다", "스피닝 엘보우", "8²=16", "주먹을 이기는 가위✂️", "큐티셉", "목성은 큐피트", " 뿌듯 ", " 됐다! ", " 귀, 짝 ", "심심스톰", "똠양국", "와사비", "총알이 위로 휘어!", "크레이지 다이아몬드!", "오버 드라이브!", "버뮤다 팬츠", "금 반지", "꿈 저장", "학살자 / 아 시발 안해", "살인방법, 다 찢어 죽일라고 흐흐", "뿌듯함", "복싱, 힘과 속도", "√=π", "가오의 대가, 싹싹 빌기", "갖고 와 이씨", "걷는 모습/움직임 ", "월요일이 마지막으로 웃는 날이 될거야", "아 왜 로벅스가 없어", "레몬에이드", "지금"];
+const customQuizData = [{question: "1학년 국어 시간에 해골을 그려 넣은 명함을 발표하며, 자신을 괴롭히는 사람들을 향해 던진 전설적인 한마디에서 유래된 명함의 이름은?", answer: "걸어다니는 죽음", hint: "석천중을 뒤흔든 공포의 명함"}, {question: "8의 제곱이 무엇이냐는 단순한 산수 질문에, 곱하기 2라는 자신만의 독창적인 수식 논리를 펼치며 창조해낸 정답은?", answer: "8²=16", hint: "수학계를 뒤흔든 그분의 독자적 공식"}, {question: "2024년 초, 옆반 친구가 찾아와 '여기 누가 일짱이냐'고 도발했을 때, 그분이 주저 없이 외치며 김천시를 평정하게 된 계기가 된 말은?", answer: "내가 여기 두목이다", hint: "선전포고"}, {question: "백○송 선생님의 귀여워하심에서 시작되어, 기가 수업 때 준우의 각색을 거쳐 결국 학교 축제 응원 구호로까지 울려 퍼지게 된 그분의 공식 아이돌급 별명은?", answer: "큐티셉", hint: "모두가 외치는 그 이름"}, {question: "본래 그분이 사용하던 로블록스 계정명인 '심심한 새기'가 시간이 흐르며 자연스럽게 변형되어 정착된, 가장 상징적인 시그니처 네임은?", answer: "심심보이", hint: "전설의 시작이 된 옛 닉네임"}, {question: "급식실에서 준우와 병호가 오늘 나오는 메뉴인 '황태국'에 대해 대화하는 것을 그분이 순간적으로 오해하여 탄생시킨 이국적인 메뉴 이름은?", answer: "똠양국", hint: "태국 요리가 급식에?"}, {question: "체육시간에 친구들과 총게임 이야기를 나누던 중, 본인이 쏘는 탄환은 물리 법칙을 무시하고 궤적이 바뀐다며 끝까지 우겨서 탄생한 설화는?", answer: "총알이 위로 휘어!", hint: "물리 법칙 파괴"}, {question: "선 따라 움직이는 로봇을 배우던 수업 시간, 준우에게 대결을 신청하며 '너 나랑 한판 하자?'라고 가오를 잡았으나 거절(무시)당하자 민망함을 감추지 못하고 내뱉은 말은?", answer: "너 나랑 한판 하자? 아이고- ", hint: "급격한 태세 전환과 뻘쭘함"}, {question: "가만히 있는 친구에게 다가가 몸을 뒤로 쓱 숙인 뒤, 두 손가락을 꼿꼿이 펴고 찌르는 기술로 원피스의 '지건'을 연상케 하는 그분의 학살 기술 이름은?", answer: "지금", hint: "두 글자의 타이밍"}, {question: "1학년 쉬는 시간, 준우와의 가위바위보에서 주먹을 맞닥뜨려 패배했음에도 불구하고, '내 것은 주먹도 이긴다'라며 상성을 파괴해버린 그분의 치트키 무기는?", answer: "주먹을 이기는 가위✂️", hint: "가위바위보 밸런스 붕괴"}, {question: "2학년 과학시간에 행성 Jupiter의 뜻을 묻는 선생님의 질문에, 그분이 아주 당당하게 손을 들고 외쳐 교실을 웃음바다로 만든 그리스 신화적 오답은?", answer: "목성은 큐피트", hint: "사랑의 화살을 쏘는 목성"}, {question: "어느 비와 천둥이 미치도록 쏟아지던 날, 시훈이가 밖을 향해 활을 쏘는 시늉을 하며 엄청난 기세로 외쳤던 일격필살 기술의 이름은?", answer: "심심스톰", hint: "날씨와 동화된 그분의 기세"}, {question: "그분이 서후와 함께 급식으로 나온 메밀소바를 먹던 도중, 소바의 기본 상식을 망각한 채 '우리 학교는 왜 이걸 맨날 넣는 거냐'며 억울해했던 식재료는?", answer: "와사비", hint: "코가 찡해지는 녹색 소스"}, {question: "피시방에서 로블록스 'forsaken'을 플레이하던 중, 자신의 캐릭터인 '학살자'가 생각만큼 킬을 따지 못하자 깊은 빡침을 느끼고 샷건을 치며 외친 대사는?", answer: "학살자 / 아 시발 안해", hint: "빡종 직전의 외침"}, {question: "발명품 발표 수업 시간, 현실 가능성을 초월한 미래지향적 초고도 기술을 기획해와서 듣는 이들의 웃음을 멈추지 않게 만들었던 그분 조의 발명품 주제는?", answer: "꿈 저장", hint: "잠잘 때 일어나는 일을 기록함"}, {question: "명함 발표 사건 직후, 자신의 자리로 돌아와 앉으면서 지었던 그 특유의 승리감 넘치는 표정을 박제한 대법전 단어는?", answer: "뿌듯함", hint: "걸어다니는 죽음 완성 직후의 상태"}, {question: "학교에 반지를 끼고 와 가오를 부리다가, 손가락에서 빠지지 않자 어쩔 수 없이 힙합 '갱 사인'을 날리며 상황을 모면하려 했던 눈물의 장신구는?", answer: "금 반지", hint: "약지에 걸려버린 족쇄"}, {question: "어느 친구가 복싱의 힘과 속도에 대해 논하자, 사물함 앞으로 당당히 걸어가 마구 줘패며 '나는 둘 다 가지고 있지'라고 증명해낸 일화의 제목은?", answer: "복싱, 힘과 속도", hint: "불쌍한 사물함"}, {question: "그분이 어깨를 옆으로 강하게 회전시키며 상대를 가격하는 기술로, 인기 웹툰 '외모지상주의'를 보고 영감을 받아 터득한 것으로 추정되는 체술은?", answer: "스피닝 엘보우", hint: "어깨 회전력의 극치"}, {question: "수학계의 패러다임과 기하학을 완전히 무시하고, 원주율과 무리수 기호가 완벽하게 일치한다고 늘 주장하시는 그분만의 절대적 공식은?", answer: "√=π", hint: "그분 눈에는 똑같아 보이는 두 기호"}, {question: "한마 바키의 기술을 현실에 적용하여, 상대방의 양쪽 귀를 손뼉으로 강타해 이명과 저릿함을 선사하는 무시무시한 고막 타격기의 이름은?", answer: "귀, 짝", hint: "짝 소리와 함께 찾아오는 이명"}, {question: "가만히 있던 친구의 뺨을 때렸다가 분노한 친구에게 목 초크를 당하자, '걱걱 미안 다신 안 그럴게'라며 굴복했던 반전의 가오 일화는?", answer: "가오의 대가, 싹싹 빌기", hint: "태세 전환의 대가"}, {question: "급식을 먹던 준우가 남긴 반찬이 탐났던 그분이, 아주 위압적인 기세로 밥상을 앗아가며 내뱉은 명대사는?", answer: "갖고 와 이씨", hint: "급식 강탈자의 대사"}, {question: "가슴을 한껏 부풀리고 어깨를 넓게 편 채, 교내의 다른 학생들과 완벽하게 차별화된 아우라를 풍기며 걸어가는 그분의 고유 모션은?", answer: "걷는 모습/움직임 ", hint: "가오가 몸을 지배한 걸음"}, {question: "2025년 AI 캠프 날, 팀의 운명이 걸린 가위바위보 대결에서 극적인 승리를 거둔 그분이 온 세상의 염원을 담아 외친 전설의 감탄사는?", answer: "됐다!", hint: "결실을 맺은 승리의 대사"}, {question: "준우가 일러바친 태수의 행동에 깊이 분노한 그분이, 월요일 등교를 앞두고 태수를 향해 날린 서늘하고 무시무시한 경고의 한마디는?", answer: "월요일이 마지막으로 웃는 날이 될거야", hint: "주말에 내려진 시한부 선고"}, {question: "피시방에서 로블록스 스핀 무제를 지르려다가 텅 비어버린 잔액을 확인하고 초격노하여 피시방이 떠나가라 외친 한탄은?", answer: "아 왜 로벅스가 없어", hint: "0 Robux의 슬픔"}, {question: "레몬에이드를 만들던 특별 수업 시간, 그분의 갑작스러운 역동적 움직임을 버티지 못하고 바지 위로 무참히 쏟아져 내린 음료는?", answer: "레몬에이드", hint: "바지가 상큼해진 사건"}, {question: "죠죠의 기묘한 모험에 등장하는 초기술을 현실에 그대로 구현하여, 사용 시 반드시 기술명을 크게 외쳐야 발동되는 그분의 첫 번째 스탠드 기술은?", answer: "크레이지 다이아몬드!", hint: "고쳐내는 능력의 이름"}, {question: "엄청난 위력의 펀치 러시를 동반하며, 죠죠의 감성을 그대로 담아 현실의 적들을 파괴하는 그분의 두 번째 미친 스탠드 기술 이름은?", answer: "오버 드라이브!", hint: "파문 질주"}, {question: "구미의 옷 상점까지 찾아가 야심 차게 도전했으나, 본인의 예상치 못한 핏과 어울리지 않아 그분에게 깊은 슬픔만을 안겨준 비운의 하의는?", answer: "버뮤다 팬츠", hint: "구미 패션 정복 실패"}];
+
+/* 위키 렌더링용 원본 백과 데이터 */
 const gradeEntries = {
 1: [
-{ id:"simsimboy", title:"심심보이",
-content:"심심보이는 놀랍게도 그분이 직접 만든 별명이 아니다. 하지만 어찌 밈화가 됬는지는 아무도 모른다. 그분의 옛 로블록스 닉네임이 \" 심심한 새기 \" 였는데 그것이 어찌하다 심심보이로 변형되었다. 어쩌면 전설은 우연에서 나올지도 모르겠다.",
-tags:["이름","베스트","레전드", "공식"], important:true },
-{ id:"walking death", title:"걸어다니는 죽음",
-content:"걸어다니는 죽음은, 1학년 국어시간 그분이 만든 명함에서 유래되었다. 해골이 그려진 명함, 선생님이 그분에게 이것은 무엇이냐 물었을때 그가 답했다. \" 저 괴롭히는 형들 다 찢어 죽일라고요 \"라며. 그 명함의 이름이 걸어다니는 죽음이였다. 왠지 위험할 것 같다.",
-tags:["죽음","명함","뿌듯","걸음", "레전드", "베스트", "공식"], important:true },
-{ id:"Boss", title:"내가 여기 두목이다",
-content:"2024년도 초, 옆반에서 찾아온 친구는 우리반을 향하며 \" 여기 누가 일짱이냐 \" 라며 물어보았다. 그러자 우리반의 그분은 \" 내가 여기 두목이다! \" 라며 강함을 인증하였다. 추후 그분은 우리 학교를 넘어 김천시 두목이 되었다.",
-tags:["두목","보스","최강","일짱"], important:true },
-{ id:"TearThemAll", title:"살인방법, 다 찢어 죽일라고 흐흐",
-content:"걸어다니는 죽음에서 유래가 되었다. 그분이 국어시간 발표에서 한 말, \" 저 괴롭히는 형들 다 찢어 죽일라고요 \" 라는 발언이 밈이 되어 석천중을 돌아다니고 있다.",
-tags:["행동","살인","학살","죽음"], important:false },
-{ id:"BBudt", title:"뿌듯함",
-content:"그분이 걸어다니는 죽음을 발표 한 후, 자리에 앉을 때 뿌듯한 표정을 짓고 있었음에서 유래가 되었다. ( 하지만 여러 곳에서 사용 되었다. )",
-tags:["뿌듯","완벽","죽음"], important:false },
-{ id:"goldRing", title:"금 반지",
-content:"그분이 어느날 학교에 금 반지를 들고와 약지에 끼고 가오를 부린 사건을 일컫는다. 하지만 그분이 손에 낀 반지를 빼려는데 빠지지 않자 \" 갱 사인(🤟☠️🤟)\" 을 한 사건도 금반지 사건으로 일컫는다.",
-tags:["악세사리","갱","가오","금반지"], important:false },
-{ id:"worlds best garwe", title:"주먹을 이기는 가위✂️",
-content:"1학년 어느 쉬는 시간, 가위바위보를 하며 놀고있는 선량한 준우에게 다가가 그분이 말했다. \" 나랑도 가위바위보 하자? \" 그러고는 가위바위보를 시작했다. 하지만 그분이 가위를 내고, 준우가 주먹을 내어 그분이 졌지만, 그분이 말했다. \" 내 가위는 주먹도 이겨. \" 라는 말에서 유래되었다.",
-tags:["최강","챔피언","가위"], important:false },
-{ id:"spining", title:"스피닝 엘보우",
-content:"그분이 예전에 사용하신 기술, 어깨를 옆으로 강하게 돌리며 상대를 가격하는 기술이다. 그분이 어째서 이 기술을 터득하였는지는 외모 지상 주의를 보면 잘 나와있다.",
-tags:["가오","행동"], important:false },
-{ id:"boxing", title:"복싱, 힘과 속도",
-content:"1학년 어느 날 그분이 어느 친구에게 다가가 말했다. \" 너 복싱좀 하냐? \" 그러자 그 친구는 \" 나 속도는 느린데 파워는 좀 있어. \" 그러자 그는 사물함으로 다가가 능력을 발휘했다. \" 나는 힘과 속도 둘 다 가지고있지 \" 라 하며 마구마구 사물함을 줘팬 것에서 유래되었다.",
-tags:["명언","복싱","속도","힘"], important:false },
-{ id:"piroot", title:"√=π",
-content:"파이는 루트라는 수학 공식은 이 세상 어디에도 없다, 하지만 그분은 파이와 루트가 같다고 늘 말씀하신다. ( 어쩌면 천재일지도 모르겠다.. )",
-tags:["수학공식","파이루트","논리"], important:false },
-{ id:"clap", title:"귀, 짝",
-content:"그분이 1학년때, 한마 바키에 나오는 기술을 사용 한 사례 중 하나. 손뼉을 상대 양손 귀에다가 치는것을 의미한다. 당하면 귀가 저릿하며 이명이 짧게 들리는 효과가 있다.",
-tags:["귀","행동","한마바키"], important:false },
-{ id:"ssakssak", title:"가오의 대가, 싹싹 빌기",
-content:"그분이 어느날, 가만히 있던 어느 친구에게 다가가 뺨을 2대 때렸다. 그러자 맞은 친구는 격노하여 그분의 뒤로 가, 목에 강렬한 초크를 걸었다. 그러자 그분은 손으로 싹싹 빌며 \" 걱걱 미안 ( 싹싹 ) 미안 다신 안그럴게 \" 와 같은 행동을 보인 것에서 유래되었다.",
-tags:["행동","미안함","싹싹","슬픔"], important:false },
-{ id:"bring", title:"갖고 와 이씨",
-content:"그분이 급식을 먹는 한 친구에게 급식을 뜯을때 했던 말이다. 정확히는 급식을 먹던 준우가 남긴 반찬을 그분이 먹고싶었을까, \" 갖고 와 이씨! \" 라며 아주 위협적으로 급식을 앗아간 것에서 유래되었다.",
-tags:["행동","급식","가오"], important:false },
-{ id:"walkMotion", title:"걷는 모습/움직임 ",
-content:"그분은 걸어다닐때, 가슴을 부풀리고 어깨를 넓게 펴 보이듯 걸어다녔다. 다른 친구들보다 유독 눈에 띄는 방식이였다.",
-tags:["행동","가오","걸음"], important:false }
+{ id:"simsimboy", title:"심심보이", content:"심심보이는 놀랍게도 그분이 직접 만든 별명이 아니다. 하지만 어찌 밈화가 됐는지는 아무도 모른다. 그분의 옛 로블록스 닉네임이 '심심한 새기' 였는데 그것이 어찌하다 심심보이로 변형되었다. 어쩌면 전설은 우연에서 나올지도 모르겠다.", tags:["이름","베스트","레전드", "공식"], important:true },
+{ id:"walking death", title:"걸어다니는 죽음", content:"걸어다니는 죽음은, 1학년 국어시간 그분이 만든 명함에서 유래되었다. 해골이 그려진 명함, 선생님이 그분에게 이것은 무엇이냐 물었을때 그가 답했다. '저 괴롭히는 형들 다 찢어 죽일라고요'라며. 그 명함의 이름이 걸어다니는 죽음이였다. 왠지 위험할 것 같다.", tags:["죽음","명함","뿌듯","걸음", "레전드", "베스트", "공식"], important:true },
+{ id:"Boss", title:"내가 여기 두목이다", content:"2024년도 초, 옆반에서 찾아온 친구는 우리반을 향하며 '여기 누가 일짱이냐' 라며 물어보았다. 그러자 우리반의 그분은 '내가 여기 두목이다!' 라며 강함을 인증하였다. 추후 그분은 우리 학교를 넘어 김천시 두목이 되었다.", tags:["두목","보스","최강","일짱"], important:true },
+{ id:"TearThemAll", title:"살인방법, 다 찢어 죽일라고 흐흐", content:"걸어다니는 죽음에서 유래가 되었다. 그분이 국어시간 발표에서 한 말, '저 괴롭히는 형들 다 찢어 죽일라고요' 라는 발언이 밈이 되어 석천중을 돌아다니고 있다.", tags:["행동","살인","학살","죽음"], important:false },
+{ id:"BBudt", title:"뿌듯함", content:"그분이 걸어다니는 죽음을 발표 한 후, 자리에 앉을 때 뿌듯한 표정을 짓고 있었음에서 유래가 되었다. ( 하지만 여러 곳에서 사용 되었다. )", tags:["뿌듯","완벽","죽음"], important:false },
+{ id:"goldRing", title:"금 반지", content:"그분이 어느날 학교에 금 반지를 들고와 약지에 끼고 가오를 부린 사건을 일컫는다. 하지만 그분이 손에 낀 반지를 빼려는데 빠지지 않자 '갱 사인(🤟☠️🤟)' 을 한 사건도 금반지 사건으로 일컫는다.", tags:["악세사리","갱","가오","금반지"], important:false },
+{ id:"worlds best garwe", title:"주먹을 이기는 가위✂️", content:"1학년 어느 쉬는 시간, 가위바위보를 하며 놀고있는 선량한 준우에게 다가가 그분이 말했다. '나랑도 가위바위보 하자?' 그러고는 가위바위보를 시작했다. 하지만 그분이 가위를 내고, 준우가 주먹을 내어 그분이 졌지만, 그분이 말했다. '내 가위는 주먹도 이겨.' 라는 말에서 유래되었다.", tags:["최강","챔피언","가위"], important:false },
+{ id:"spining", title:"스피닝 엘보우", content:"그분이 예전에 사용하신 기술, 어깨를 옆으로 강하게 돌리며 상대를 가격하는 기술이다. 그분이 어째서 이 기술을 터득하였는지는 외모 지상 주의를 보면 잘 나와있다.", tags:["가오","행동"], important:false },
+{ id:"boxing", title:"복싱, 힘과 속도", content:"1학년 어느 날 그분이 어느 친구에게 다가가 말했다. '너 복싱좀 하냐?' 그러자 그 친구는 '나 속도는 느린데 파워는 좀 있어.' 그러자 그는 사물함으로 다가가 능력을 발휘했다. '나는 힘과 속도 둘 다 가지고있지' 라 하며 마구마구 사물함을 줘팬 것에서 유래되었다.", tags:["명언","복싱","속도","힘"], important:false },
+{ id:"piroot", title:"√=π", content:"파이는 루트라는 수학 공식은 이 세상 어디에도 없다, 하지만 그분은 파이와 루트가 같다고 늘 말씀하신다. ( 어쩌면 천재일지도 모르겠다.. )", tags:["수학공식","파이루트","논리"], important:false },
+{ id:"clap", title:"귀, 짝", content:"그분이 1학년때, 한마 바키에 나오는 기술을 사용 한 사례 중 하나. 손뼉을 상대 양손 귀에다가 치는것을 의미한다. 당하면 귀가 저릿하며 이명이 짧게 들리는 효과가 있다.", tags:["귀","행동","한마바키"], important:false },
+{ id:"ssakssak", title:"가오의 대가, 싹싹 빌기", content:"그분이 어느날, 가만히 있던 어느 친구에게 다가가 뺨을 2대 때렸다. 그러자 맞은 친구는 격노하여 그분의 뒤로 가, 목에 강렬한 초크를 걸었다. 그러자 그분은 손으로 싹싹 빌며 '걱걱 미안 ( 싹싹 ) 미안 다신 안그럴게' 와 같은 행동을 보인 것에서 유래되었다.", tags:["행동","미안함","싹싹","슬픔"], important:false },
+{ id:"bring", title:"갖고 와 이씨", content:"그분이 급식을 먹는 한 친구에게 급식을 뜯을때 했던 말이다. 정확히는 급식을 먹던 준우가 남긴 반찬을 그분이 먹고싶었을까, '갖고 와 이씨!' 라며 아주 위적으로 급식을 앗아간 것에서 유래되었다.", tags:["행동","급식","가오"], important:false },
+{ id:"walkMotion", title:"걷는 모습/움직임 ", content:"그분은 걸어다닐때, 가슴을 부풀리고 어깨를 넓게 펴 보이듯 걸어다녔다. 다른 친구들보다 유독 눈에 띄는 방식이였다.", tags:["행동","가오","걸음"], important:false }
 ],
-
-2: [ 
-{ id:"yea", title:"됐다!",
-content:"2025년, 학교에 ai 캠프를 하던 날이였다. 어느 게임 진행 중, 그분이 가위바위보를 이겨야만 그분 팀에게 유리했다. 모두의 염원이 담긴 목소리가 결실을 맺었다. 그분이 가위바위보를 이기며 남긴 전설의 말이다.",
-tags:["명언","레전드","뿌듯","베스트"], important:true },
-{ id:"now", title:"지금",
-content:"그분은 가만히 있는 친구에게 가서몸을 뒤로 숙이고 두손가락을 핀 채 사람을 찌르는 지금이라는 기술을 사용하는것을 좋아하였다. 그것이 웃기다는 이유로 밈화가 되었다. 왠지 원피스의 지건과 닮아있는 듯 하다.",
-tags:["행동","학살"], important:false },
-{ id:"cutesep", title:"큐티셉",
-content:"2학년 담임이신 백은송 선생님께서 가장 좋아하시는 별명이다. 기가 수업때 선생님께서 그분에게 \" 오 귀엽네 \" 라 말한 것을 준우가 \".. 큐티셉? \" 이라 각색하여 생긴 별명. 큐티셉이 널리 사용되며 우리학교 유명 인사가 되었다. 축제때도 응원으로 큐티셉을 외치는 사람이 몇몇 있다.",
-tags:["뿌듯","공식","큐티"], important:false },
-{ id:"piroot", title:"√=π",
-content:"파이는 루트라는 수학 공식은 이 세상 어디에도 없다, 하지만 그분은 파이와 루트가 같다고 늘 말씀하신다. ( 어쩌면 천재일지도 모르겠다.. )",
-tags:["수학공식","논리"], important:false },
-{ id:"8zegop", title:"8²=16",
-content:"8의 제곱은 16이라는 수식 또한 절대 없다, 하지만 그분은 만들어냈다. 새로운 수식이다. 8이 제곱되면 8*8 = 64이지만, 그분의 논리로는 8*2가 되어 16이 나온다.",
-tags:["수학공식","논리"], important:false },
-{ id:"cupid", title:"목성은 큐피트",
-content:"어느 2학년 과학시간, 행성을 배우는 시간에서 목성의 영어명 Jupiter가 나왔다. 선생님께서 주피터의 뜻이 무엇인지 아는 사람을 물었을때 그분이 손을 들고는 얘기했다. \" 큐피트요! \" 그러자 아이들은 웃었다. 알고보니 주피터는 큐피트가 아니라 천둥의 신 제우스였던 것이다, 그 이후로부터 친구들 사이에서 활을 쏘는 시늉이 잠시 유행했었다.",
-tags:["오해","논리"], important:false },
-{ id:"simsimstorm", title:"일격 필살, 심심스톰",
-content:"심심 스톰은, 2학년 어느날 비가 아주 강하게 오던날, 밖에 아주 강한 천둥이 다수 치던날, 시훈이는 밖에 활을 쏘는 시늉을 하며, \" 시이이임, 시이이임, 스토오오옴! \" 이라며 외친것이 심심 스톰이라 불린다.",
-tags:["행동","최강","뿌듯"], important:false },
-{ id:"ddom", title:"똠양국",
-content:"그분이 급식실에서 병호와 준우가 하는 얘기를 들었다. \" 오늘 황태국 나오네 \" 그러자 그분은 잘못 들었는지, \" 어? 똠양국 나온다고? \" 라고 대답을 한 것이 밈으로 발전하였다.",
-tags:["귀","오해","급식"], important:false },
-{ id:"piroot", title:"너 나랑 한판 하자? 아이고- ",
-content:"펜으로 선을 그리면 선 따라가는 로봇을 배운 시간에 그분이 가위바위보 맵을 만들었다, 그분은 준우와 하고싶었는지 그분은 종이를 내밀며 준우에게 \" 너 나랑 한판 하자?라며 가오있게 말했지만, 준우는 듣지 못했고, 그분이 뻘쭘하여 \"아이고\" 라고 한 사건을 일컫는다. 이 사건은 많은 이들을 웃게 만들었다.",
-tags:["수학공식","파이루트","논리"], important:false },
-{ id:"wasabi", title:"와사비",
-content:"그분이 서후와 급식을 먹고 있을때 말했다. 그날의 메뉴는 메밀소바였다. 그날 그분이 서후에게 말했다. \" 아니, 우리학교는 왜 맨날 와사비를 넣는거야? \" 문제는 메밀소바는 원래 와사비가 기본으로 들어간다는 점이다. 그 말이 밈화되어 와사비가 되었다.",
-tags:["오해","급식"], important:false },
-{ id:"gun", title:"총알이 위로 휘어!",
-content:"그분이 체육시간에 우리에게 말했다. \" 나 총알이 위로 휘어! \" 다른 친구들이 말이 안된다며 그분을 설득했지만 그는 의견을 굽히지 않고 \" 아니, 진짜라니까? \" 라고 하며 반박한 사건을 일컫는다.",
-tags:["게임","총알","논리"], important:false },
-{ id:"slaughter", title:"학살자 / 아 시발 안해",
-content:"그분과 피시방에서 있었던 일이다. 로블록스 forsaken이라는 게임을 플레이하며 놀고 있던 그분. 하지만 본인의 캐릭터 \"학살자\"가 다른 사람을 잡지 못하는 것에 격노하여 \" 아 시발 안해 \" 라며 소리를 질렀다는 것에서 유래되었다.",
-tags:["게임","욕","학살"], important:false },
-{ id:"wolyoil", title:"월요일이 마지막으로 웃는 날이 될거야",
-content:"그분이 태수에게 격노하여 말한 것에서 유래되었다. 준우는 태수가 한 일을 그분께 일러바쳤다, 그때 그분은 말했다. \" 태수는 월요일이 마지막으로 웃는 날이 될거야. \"",
-tags:["가오","행동"], important:false },
-{ id:"NoRobux", title:"아 왜 로벅스가 없어",
-content:"그분과 피시방에서 로블록스를 하던 때였다. 그분은 스핀 무제를 사려했지만 로벅스가 텅텅 빈 본인의 계정을 보자 초격노하며 \" 아 왜 로벅스가 없어! \" 라며 외쳤다.",
-tags:["게임"], important:false },
-{ id:"Dreamsaver", title:"꿈 저장",
-content:"수업시간, 본인의 발명품을 발표하는 시간. 그분의 조는 미래지향적 초고도기술의 결정체인 꿈 저장 장치를 기획하였다. 꿈을 저장한다는게 어처구니 없었기 때문일까, 웃음이 멈추질 않았다.",
-tags:["발명"], important:false },
-{ id:"lemon", title:"레몬에이드",
-content:"특별한 수업시간, 그분과 친구들은 레몬에이드를 만들고 있었다. 그러나 갑작스런 그분의 움직임으로 버티지 못한 컵은 휘청이며 그분의 바지로 쏟아졌다. ",
-tags:["행동"], important:false }
+2: [
+{ id:"yea", title:"됐다!", content:"2025년, 학교에 ai 캠프를 하던 날이였다. 어느 게임 진행 중, 그분이 가위바위보를 이겨야만 그분 팀에게 유리했다. 모두의 염원이 담긴 목소리가 결실을 맺었다. 그분이 가위바위보를 이기며 남긴 전설의 말이다.", tags:["명언","레전드","뿌듯","베스트"], important:true },
+{ id:"now", title:"지금", content:"그분은 가만히 있는 친구에게 가서몸을 뒤로 숙이고 두손가락을 핀 채 사람을 찌르는 지금이라는 기술을 사용하는것을 좋아하였다. 그것이 웃기다는 이유로 밈화가 되었다. 왠지 원피스의 지건과 닮아있는 듯 하다.", tags:["행동","학살"], important:false },
+{ id:"cutesep", title:"큐티셉", content:"2학년 담임이신 백○송 선생님께서 가장 좋아하시는 별명이다. 기가 수업때 선생님께서 그분에게 '오 귀엽네' 라 말한 것을 준우가 '.. 큐티셉?' 이라 각색하여 생긴 별명. 큐티셉이 널리 사용되며 우리학교 유명 인사가 되었다. 축제때도 응원으로 큐티셉을 외치는 사람이 몇몇 있다.", tags:["뿌듯","공식","큐티"], important:false },
+{ id:"piroot2", title:"√=π (2학년)", content:"파이는 루트라는 수학 공식은 이 세상 어디에도 없다, 하지만 그분은 파이와 루트가 같다고 늘 말씀하신다. ( 어쩌면 천재일지도 모르겠다.. )", tags:["수학공식","논리"], important:false },
+{ id:"8zegop", title:"8²=16", content:"8의 제곱은 16이라는 수식 또한 절대 없다, 하지만 그분은 만들어냈다. 새로운 수식이다. 8이 제곱되면 88 = 64이지만, 그분의 논리로는 82가 되어 16이 나온다.", tags:["수학공식","논리"], important:false },
+{ id:"cupid", title:"목성은 큐피트", content:"어느 2학년 과학시간, 행성을 배우는 시간에서 목성의 영어명 Jupiter가 나왔다. 선생님께서 주피터의 뜻이 무엇인지 아는 사람을 물었을때 그분이 손을 들고는 얘기했다. '큐피트요!' 그러자 아이들은 웃었다. 알고보니 주피터는 큐피트가 아니라 천둥의 신 제우스였던 것이다, 그 이후로부터 친구들 사이에서 활을 쏘는 시늉이 잠시 유행했었다.", tags:["오해","논리"], important:false },
+{ id:"simsimstorm", title:"일격 필살, 심심스톰", content:"심심 스톰은, 2학년 어느날 비가 아주 강하게 오던날, 밖에 아주 강한 천둥이 다수 치던날, 시훈이는 밖에 활을 쏘는 시늉을 하며, '시이이임, 시이이임, 스토오오옴!' 이라며 외친것이 심심 스톰이라 불린다.", tags:["행동","최강","뿌듯"], important:false },
+{ id:"ddom", title:"똠양국", content:"그분이 급식실에서 병호와 준우가 하는 얘기를 들었다. '오늘 황태국 나오네' 그러자 그분은 잘못 들었는지, '어? 똠양국 나온다고?' 라고 대답을 한 것이 밈으로 발전하였다.", tags:["귀","오해","급식"], important:false },
+{ id:"fight", title:"너 나랑 한판 하자? 아이고- ", content:"펜으로 선을 그리면 선 따라가는 로봇을 배운 시간에 그분이 가위바위보 맵을 만들었다, 그분은 준우와 하고싶었는지 그분은 종이를 내밀며 준우에게 '너 나랑 한판 하자?'라며 가오있게 말했지만, 준우는 듣지 못했고, 그분이 뻘쭘하여 '아이고' 라고 한 사건을 일컫는다. 이 사건은 많은 이들을 웃게 만들었다.", tags:["행동","논리"], important:false },
+{ id:"wasabi", title:"와사비", content:"그분이 서후와 급식을 먹고 있을때 말했다. 그날의 메뉴는 메밀소바였다. 그날 그분이 서후에게 말했다. '아니, 우리학교는 왜 맨날 와사비를 넣는거야?' 문제는 메밀소바는 원래 와사비가 기본으로 들어간다는 점이다. 그 말이 밈화되어 와사비가 되었다.", tags:["오해","급식"], important:false },
+{ id:"gun", title:"총알이 위로 휘어!", content:"그분이 체육시간에 우리에게 말했다. '나 총알이 위로 휘어!' 다른 친구들이 말이 안된다며 그분을 설득했지만 그는 의견을 굽히지 않고 '아니, 진짜라니까?' 라고 하며 반박한 사건을 일컫는다.", tags:["게임","총알","논리"], important:false },
+{ id:"slaughter", title:"학살자 / 아 시발 안해", content:"그분과 피시방에서 있었던 일이다. 로블록스 forsaken이라는 게임을 플레이하며 놀고 있던 그분. 하지만 본인의 캐릭터 '학살자'가 다른 사람을 잡지 못하는 것에 격노하여 '아 시발 안해' 라며 소리를 질렀다는 것에서 유래되었다.", tags:["게임","욕","학살"], important:false },
+{ id:"wolyoil", title:"월요일이 마지막으로 웃는 날이 될거야", content:"그분이 태수에게 격노하여 말한 것에서 유래되었다. 준우는 태수가 한 일을 그분께 일러바쳤다, 그때 그분은 말했다. '태수는 월요일이 마지막으로 웃는 날이 될거야.'", tags:["가오","행동"], important:false },
+{ id:"NoRobux", title:"아 왜 로벅스가 없어", content:"그분과 피시방에서 로블록스를 하던 때였다. 그분은 스핀 무제를 사려했지만 로벅스가 텅텅 빈 본인의 계정을 보자 초격노하며 '아 왜 로벅스가 없어!' 라며 외쳤다.", tags:["게임"], important:false },
+{ id:"Dreamsaver", title:"꿈 저장", content:"수업시간, 본인의 발명품을 발표하는 시간. 그분의 조는 미래지향적 초고도기술의 결정체인 꿈 저장 장치를 기획하였다. 꿈을 저장한다는게 어처구니 없었기 때문일까, 웃음이 멈추질 않았다.", tags:["발명"], important:false },
+{ id:"lemon", title:"레몬에이드", content:"특별한 수업시간, 그분과 친구들은 레몬에이드를 만들고 있었다. 그러나 갑작스런 그분의 움직임으로 버티지 못한 컵은 휘청이며 그분의 바지로 쏟아졌다. ", tags:["행동"], important:false }
 ],
-
 3: [
-{ id:"CrazyDiamond", title:"크레이지 다이아몬드!",
-content:"크레이지 다이아몬드! 죠죠의 기묘한 모험을 좋아하는 그분, 작품 내의 기술을 현실에서 구현한 이례적인 사건이다. 사용할때 이름을 외치는것이 특징이고, 그분의 초기술 중 하나다.",
-tags:["애니","행동", "기술"], important:false },
-{ id:"OverDrive", title:"오버 드라이브!",
-content:"죠죠의 기묘한 모험을 좋아하는 그분, 작품 내의 기술을 현실에서 구현한 미친 기술이다. 엄청난 위력의 펀치러시를 동반한 스탠드 기술이다.",
-tags:["애니","행동", "기술"], important:false },
-{ id:"bermuda", title:"버뮤다 팬츠",
-content:"그분은 구미의 옷 상점을 가서 사고싶던 버뮤다 팬츠를 찾고, 입어보았다. 하지만 그의 핏과 어울리지 않는 바지에 그분은 슬퍼하였다.",
-tags:["행동"], important:false }
+{ id:"CrazyDiamond", title:"크레이지 다이아몬드!", content:"크레이지 다이아몬드! 죠죠의 기묘한 모험을 좋아하는 그분, 작품 내의 기술을 현실에서 구현한 이례적인 사건이다. 사용할때 이름을 외치는것이 특징이고, 그분의 초기술 중 하나다.", tags:["애니","행동", "기술"], important:false },
+{ id:"OverDrive", title:"오버 드라이브!", content:"죠죠의 기묘한 모험을 좋아하는 그분, 작품 내의 기술을 현실에서 구현한 미친 기술이다. 엄청난 위력의 펀치러시를 동반한 스탠드 기술이다.", tags:["애니","행동", "기술"], important:false },
+{ id:"bermuda", title:"버뮤다 팬츠", content:"그분은 구미의 옷 상점을 가서 사고싶던 버뮤다 팬츠를 찾고, 입어보았다. 하지만 그의 핏과 어울리지 않는 바지에 그분은 슬퍼하였다.", tags:["행동"], important:false }
 ]
 };
 
 let currentGrade = 1;
-
 const listEl = document.getElementById("list");
 const emptyEl = document.getElementById("emptyState");
 const searchInput = document.getElementById("searchInput");
 
-/* ------------------------------
-📌 메뉴 버튼
---------------------------------*/
+function makeItem(entry) {
+const item = document.createElement("div");
+item.className = "item";
+if (entry.important) item.classList.add("important");
+const header = document.createElement("div");
+header.className = "item-header";
+const left = document.createElement("div");
+left.style.display = "flex"; left.style.flexDirection = "column"; left.style.gap = "6px";
+const title = document.createElement("div");
+title.className = "title"; title.textContent = entry.title;
+const tagsWrap = document.createElement("div");
+tagsWrap.className = "tags";
+entry.tags.forEach(t => {
+const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = t; tagsWrap.appendChild(tag);
+});
+left.appendChild(title); if (entry.tags.length) left.appendChild(tagsWrap);
+const right = document.createElement("div"); right.className = "chevron"; right.textContent = "›";
+header.appendChild(left); header.appendChild(right);
+const content = document.createElement("div"); content.className = "content";
+const inner = document.createElement("div"); inner.className = "content-inner"; inner.textContent = entry.content;
+content.appendChild(inner);
+header.onclick = () => {
+const isOpen = item.classList.contains("open");
+document.querySelectorAll(".item.open").forEach(e => e.classList.remove("open"));
+if (!isOpen) item.classList.add("open");
+};
+item.appendChild(header); item.appendChild(content); return item;
+}
+
+function render(q = "") {
+listEl.innerHTML = ""; const text = q.trim().toLowerCase();
+const filtered = gradeEntries[currentGrade].filter(e => {
+if (!text) return true;
+return (e.title.toLowerCase() + " " + e.tags.join(" ").toLowerCase()).includes(text);
+});
+if (filtered.length === 0) { emptyEl.style.display = "block"; return; }
+emptyEl.style.display = "none"; filtered.forEach(e => listEl.appendChild(makeItem(e)));
+}
+searchInput.oninput = (e) => render(e.target.value);
+document.querySelectorAll(".tab").forEach(tab => {
+tab.onclick = () => {
+document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+tab.classList.add("active"); currentGrade = parseInt(tab.dataset.grade, 10); render(searchInput.value);
+};
+});
+
+/* -----------------------------------------------------------
+🎮 퀴즈 및 Firebase 실시간 리더보드 연동 구역
+--------------------------------------------------------------*/
+let score = 0;
+let combo = 0;
+let quizAnswered = false;
+let myUsername = localStorage.getItem("yoseph_quiz_username") || "";
+let currentQuestionObj = null;
+
+// 닉네임 검증 및 확인
+function checkAndAskUsername() {
+if (!myUsername) {
+let input = prompt("리더보드에 등록할 닉네임을 입력해라 이씨! (최대 8자)", "");
+if (!input || input.trim() === "") {
+myUsername = "익명의도전자_" + Math.floor(Math.random() * 900 + 100);
+} else {
+myUsername = input.trim().substring(0, 8);
+}
+localStorage.setItem("yoseph_quiz_username", myUsername);
+}
+document.getElementById("myUsernameText").textContent = myUsername;
+}
+
+function loadQuiz() {
+checkAndAskUsername();
+quizAnswered = false;
+document.getElementById("nextBtn").style.display = "none";
+document.getElementById("resultMessage").className = "result-message";
+
+const qIndex = Math.floor(Math.random() * customQuizData.length);
+currentQuestionObj = customQuizData[qIndex];
+
+document.getElementById("gradeInfo").textContent = `힌트: ${currentQuestionObj.hint}`;
+document.getElementById("questionText").textContent = currentQuestionObj.question;
+
+let fakeCandidates = quizAnswerPool.filter(word => word !== currentQuestionObj.answer);
+fakeCandidates.sort(() => 0.5 - Math.random());
+let chosenFakes = fakeCandidates.slice(0, 3);
+
+let allChoices = [currentQuestionObj.answer, ...chosenFakes];
+allChoices.sort(() => 0.5 - Math.random());
+
+const optionsListEl = document.getElementById("optionsList");
+optionsListEl.innerHTML = "";
+
+allChoices.forEach(choice => {
+const btn = document.createElement("button");
+btn.className = "option-btn";
+btn.textContent = choice;
+btn.onclick = () => selectAnswer(choice, btn);
+optionsListEl.appendChild(btn);
+});
+}
+
+function selectAnswer(chosen, clickedBtn) {
+if (quizAnswered) return;
+quizAnswered = true;
+
+const msgEl = document.getElementById("resultMessage");
+
+if (chosen === currentQuestionObj.answer) {
+score += 10;
+combo += 1;
+msgEl.textContent = "정답이다 이씨! 🎉 (+10점)";
+msgEl.className = "result-message correct";
+clickedBtn.style.background = "var(--success)";
+clickedBtn.style.borderColor = "var(--success)";
+} else {
+combo = 0;
+msgEl.textContent = `틀렸다! 정답은 [ ${currentQuestionObj.answer} ] 임 ㅋㅋ`;
+msgEl.className = "result-message wrong";
+clickedBtn.style.background = "var(--error)";
+clickedBtn.style.borderColor = "var(--error)";
+}
+
+document.getElementById("scoreText").textContent = score;
+document.getElementById("comboText").textContent = combo;
+document.getElementById("nextBtn").style.display = "block";
+
+// 점수가 갱신될 때마다 파이어베이스 데이터베이스에 실시간 업로드
+uploadScore(myUsername, score);
+}
+
+function nextQuestion() {
+loadQuiz();
+}
+
+async function uploadScore(username, currentScore) {
+if (!window.db) return;
+try {
+await window.addDoc(window.collection(window.db, "leaderboard"), {
+name: username,
+score: currentScore,
+timestamp: new Date()
+});
+console.log("점수 실시간 서버 등록 완료!");
+} catch (e) {
+console.error("점수 등록 오류:", e);
+}
+}
+
+async function loadRealLeaderboard() {
+const tbody = document.getElementById("realLeaderboardBody");
+tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--muted);">서버에서 최신 랭킹을 집계 중...</td></tr>`;
+
+if (!window.db) return;
+
+try {
+const q = window.query(window.collection(window.db, "leaderboard"), window.orderBy("score", "desc"), window.limit(30));
+const querySnapshot = await window.getDocs(q);
+
+// 중복 사용자의 최고 점수만 남기기 위한 필터링 처리
+let uniqueUsers = {};
+querySnapshot.forEach((doc) => {
+const data = doc.data();
+if (!uniqueUsers[data.name] || uniqueUsers[data.name] < data.score) {
+uniqueUsers[data.name] = data.score;
+}
+});
+
+let sortedList = Object.keys(uniqueUsers).map(name => {
+return { name: name, score: uniqueUsers[name] };
+});
+sortedList.sort((a, b) => b.score - a.score);
+
+tbody.innerHTML = "";
+// 상위 10명만 노출
+const displayList = sortedList.slice(0, 10);
+
+if (displayList.length === 0) {
+tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--muted);">아직 등록된 점수가 없습니다. 첫 주자가 되어보세요!</td></tr>`;
+return;
+}
+
+displayList.forEach((user, idx) => {
+const tr = document.createElement("tr");
+if (user.name === myUsername) tr.className = "my-rank";
+
+tr.innerHTML = `
+<td>${idx + 1}등</td>
+<td>${user.name}</td>
+<td>${user.score}점</td>
+`;
+tbody.appendChild(tr);
+});
+} catch (e) {
+console.error("리더보드 로드 실패:", e);
+tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--error);">데이터를 가져오지 못했습니다. Firestore 규칙을 확인하세요.</td></tr>`;
+}
+}
+
+/* 사이드바 메뉴 열고 닫기 및 탭 전환 로직 */
 const menuBtn = document.getElementById("menuBtn");
-const sideMenu = document.getElementById("sideMenu");
 const closeMenu = document.getElementById("closeMenu");
+const sideMenu = document.getElementById("sideMenu");
 const overlay = document.getElementById("overlay");
 
-menuBtn.onclick = () => {
-sideMenu.classList.add("open");
-overlay.classList.add("show");
-};
+menuBtn.onclick = () => { sideMenu.classList.add("open"); overlay.classList.add("show"); };
+closeMenu.onclick = () => { sideMenu.classList.remove("open"); overlay.classList.remove("show"); };
+overlay.onclick = () => { sideMenu.classList.remove("open"); overlay.classList.remove("show"); };
 
-closeMenu.onclick = () => {
-sideMenu.classList.remove("open");
-overlay.classList.remove("show");
-};
-
-overlay.onclick = closeMenu;
-
-/* ------------------------------
-📌 메뉴 탭 전환
---------------------------------*/
 document.querySelectorAll(".side-tab").forEach(tab => {
 tab.onclick = () => {
 document.querySelectorAll(".side-tab").forEach(t => t.classList.remove("active"));
 tab.classList.add("active");
 
 document.querySelectorAll(".panel").forEach(p => p.style.display = "none");
+document.getElementById(`panel-${tab.dataset.panel}`).style.display = "block";
 
-document.getElementById("panel-" + tab.dataset.panel).style.display = "block";
-};
-});
-
-/* ------------------------------
-📌 테마 변경
---------------------------------*/
-document.querySelectorAll("input[name='theme']").forEach(radio => {
-radio.onchange = () => {
-document.body.classList.remove("light", "blue", "green", "red", "rainbow");
-if (radio.value !== "dark") {
-document.body.classList.add(radio.value);
+// 대화면 메인 섹션 전환 전환
+const targetPanel = tab.dataset.panel;
+if (targetPanel === "wiki" || targetPanel === "quiz") {
+document.querySelectorAll(".main-section").forEach(s => s.classList.remove("active"));
+document.getElementById(`section-${targetPanel}`).classList.add("active");
+}
+if (targetPanel === "quiz") {
+loadQuiz();
 }
 };
 });
 
-/* ------------------------------
-📌 아이템 생성
---------------------------------*/
-function makeItem(entry) {
-const item = document.createElement("div");
-item.className = "item";
-if (entry.important) item.classList.add("important");
-
-const header = document.createElement("div");
-header.className = "item-header";
-
-const left = document.createElement("div");
-left.style.display = "flex";
-left.style.flexDirection = "column";
-left.style.gap = "6px";
-
-const title = document.createElement("div");
-title.className = "title";
-title.textContent = entry.title;
-
-const tagsWrap = document.createElement("div");
-tagsWrap.className = "tags";
-
-entry.tags.forEach(t => {
-const tag = document.createElement("span");
-tag.className = "tag";
-tag.textContent = t;
-tagsWrap.appendChild(tag);
-});
-
-left.appendChild(title);
-if (entry.tags.length) left.appendChild(tagsWrap);
-
-const right = document.createElement("div");
-right.className = "chevron";
-right.textContent = "›";
-
-header.appendChild(left);
-header.appendChild(right);
-
-const content = document.createElement("div");
-content.className = "content";
-
-const inner = document.createElement("div");
-inner.className = "content-inner";
-inner.textContent = entry.content;
-
-content.appendChild(inner);
-
-header.onclick = () => {
-const isOpen = item.classList.contains("open");
-document.querySelectorAll(".item.open").forEach(e => e.classList.remove("open"));
-if (!isOpen) item.classList.add("open");
-};
-
-item.appendChild(header);
-item.appendChild(content);
-return item;
-}
-
-/* ------------------------------
-📌 렌더링
---------------------------------*/
-function render(q = "") {
-listEl.innerHTML = "";
-const text = q.trim().toLowerCase();
-
-const filtered = gradeEntries[currentGrade].filter(e => {
-if (!text) return true;
-const hay = e.title.toLowerCase() + " " + e.tags.join(" ").toLowerCase();
-return hay.includes(text);
-});
-
-if (filtered.length === 0) {
-emptyEl.style.style.display = "block"; // 오타 수정
-listEl.innerHTML = "<div class='empty'>결과가 없어요.</div>";
-return;
-}
-emptyEl.style.display = "none";
-
-filtered.forEach(e => listEl.appendChild(makeItem(e)));
-}
-
-searchInput.oninput = (e) => render(e.target.value);
-
-/* ------------------------------
-📌 학년 탭 전환
---------------------------------*/
-document.querySelectorAll(".tab").forEach(tab => {
+document.querySelectorAll(".quiz-sub-tab").forEach(tab => {
 tab.onclick = () => {
-document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+document.querySelectorAll(".quiz-sub-tab").forEach(t => t.classList.remove("active"));
 tab.classList.add("active");
 
-currentGrade = parseInt(tab.dataset.grade, 10);
-render(searchInput.value);
+document.querySelectorAll(".quiz-sub-section").forEach(s => s.classList.remove("active"));
+document.getElementById(`quiz-sub-${tab.dataset.sub}`).classList.add("active");
 };
 });
 
-/* 초기 렌더 */
-render();
-</script>
+// 테마 체인저 로직
+document.querySelectorAll('input[name="theme"]').forEach(radio => {
+radio.onchange = (e) => {
+document.body.className = "";
+if (e.target.value !== "dark") {
+document.body.classList.add(e.target.value);
+}
+};
+});
 
+// 시작 시 초기 렌더링
+window.onload = () => {
+render();
+};
+</script>
 </body>
 </html>
