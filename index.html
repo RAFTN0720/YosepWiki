@@ -643,11 +643,9 @@ let score = 0;
 let combo = 0;
 let quizAnswered = false;
 let myUsername = localStorage.getItem("yoseph_quiz_username") || "";
-// 💡 최초 무료 변경 기회 여부 체크용 변수 (로컬스토리지 연동)
 let isFirstFreeUsed = localStorage.getItem("yoseph_quiz_free_used") === "true";
 let currentQuestionObj = null;
 
-// 서버에서 기존 사용자의 저장 데이터(점수) 긁어오는 함수
 async function loadUserDataFromServer(username) {
 if (!window.db) return;
 try {
@@ -667,7 +665,6 @@ console.error("서버에서 점수 불러오기 실패:", e);
 }
 }
 
-// 닉네임 검증 및 확인
 async function checkAndAskUsername() {
 if (!myUsername) {
 let input = prompt("리더보드에 등록할 닉네임을 입력해라 이씨! (최대 8자)", "");
@@ -677,14 +674,12 @@ myUsername = "익명의도전자_" + Math.floor(Math.random() * 900 + 100);
 myUsername = input.trim().substring(0, 8);
 }
 localStorage.setItem("yoseph_quiz_username", myUsername);
-// 처음 등록할 때 서버에 기저장 내역이 있는지 크로스체크
 await loadUserDataFromServer(myUsername);
 }
 document.getElementById("myUsernameText").textContent = myUsername;
 updateChangeNameButtonText();
 }
 
-// 💡 닉네임 변경 버튼의 텍스트를 상태에 맞게 업데이트해주는 함수
 function updateChangeNameButtonText() {
 const btn = document.getElementById("changeNameBtn");
 if (btn) {
@@ -700,11 +695,9 @@ async function loadQuiz() {
 if (!myUsername) {
 await checkAndAskUsername();
 } else if (score === 0) {
-// 닉네임은 저장되어 있는데 점수가 0으로 로컬 리셋 상태면 서버에서 다시 당겨오기
 await loadUserDataFromServer(myUsername);
 }
 
-// 버튼 상태 새로고침
 updateChangeNameButtonText();
 
 quizAnswered = false;
@@ -751,9 +744,8 @@ clickedBtn.style.background = "var(--success)";
 clickedBtn.style.borderColor = "var(--success)";
 } else {
 combo = 0;
-// 🔥 틀리면 -5점 감점 밸런스 패치!
 score -= 5;
-if (score < 0) score = 0; // 🔥 0점 이하 음수 영역 진입 원천 봉쇄!
+if (score < 0) score = 0;
 
 msgEl.textContent = `틀렸다! -5점 감점! 정답은 [ ${currentQuestionObj.answer} ] 임 ㅋㅋ`;
 msgEl.className = "result-message wrong";
@@ -765,7 +757,6 @@ document.getElementById("scoreText").textContent = score;
 document.getElementById("comboText").textContent = combo;
 document.getElementById("nextBtn").style.display = "block";
 
-// 점수가 갱신될 때마다 파이어베이스 데이터베이스에 실시간 동기화
 uploadScore(myUsername, score);
 }
 
@@ -773,7 +764,6 @@ function nextQuestion() {
 loadQuiz();
 }
 
-// 중복 생성 버그 수정: addDoc 대신 고유 닉네임을 문서 고유키로 삼는 setDoc 사용!
 async function uploadScore(username, currentScore) {
 if (!window.db) return;
 try {
@@ -788,9 +778,7 @@ console.error("점수 등록 오류:", e);
 }
 }
 
-// 💰 상점: 이름 변경 기능 (최초 1회 무료 조건 처리 추가!)
 async function buyNameChange() {
-// 최초 무료 기회를 이미 사용한 상태인데 점수까지 부족한 경우 차단
 if (isFirstFreeUsed && score < 250) {
 alert(`점수가 부족하다 이씨! 현재 점수: ${score}점 / 필요 점수: 250점`);
 return;
@@ -816,7 +804,6 @@ if (confirm(confirmMsg)) {
 if (isFirstFreeUsed) {
 score -= 250;
 } else {
-// 무료 기회 소진 처리 및 로컬 저장소 반영
 isFirstFreeUsed = true;
 localStorage.setItem("yoseph_quiz_free_used", "true");
 }
@@ -826,7 +813,6 @@ localStorage.setItem("yoseph_quiz_username", myUsername);
 document.getElementById("myUsernameText").textContent = myUsername;
 document.getElementById("scoreText").textContent = score;
 
-// 파이어베이스 데이터베이스에 새 닉네임과 점수 반영
 await uploadScore(myUsername, score);
 alert("성공적으로 이름이 변경되어 서버에 등록됐다 이씨!");
 loadQuiz();
@@ -840,7 +826,6 @@ tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--mut
 if (!window.db) return;
 
 try {
-// 최고점만 덮어쓰기 형태로 들어가므로 심플하게 정렬만 해서 뽑으면 끝!
 const q = window.query(window.collection(window.db, "leaderboard"), window.orderBy("score", "desc"), window.limit(10));
 const querySnapshot = await window.getDocs(q);
 
@@ -872,7 +857,6 @@ tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--err
 }
 }
 
-/* 사이드바 메뉴 열고 닫기 및 탭 전환 로직 */
 const menuBtn = document.getElementById("menuBtn");
 const closeMenu = document.getElementById("closeMenu");
 const sideMenu = document.getElementById("sideMenu");
@@ -911,7 +895,6 @@ document.getElementById(`quiz-sub-${tab.dataset.sub}`).classList.add("active");
 };
 });
 
-// 테마 체인저 로직
 document.querySelectorAll('input[name="theme"]').forEach(radio => {
 radio.onchange = (e) => {
 document.body.className = "";
@@ -921,7 +904,6 @@ document.body.classList.add(e.target.value);
 };
 });
 
-// 시작 시 초기 렌더링
 window.onload = () => {
 render();
 };
